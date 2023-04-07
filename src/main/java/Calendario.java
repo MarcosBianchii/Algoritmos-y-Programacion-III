@@ -21,6 +21,7 @@ public class Calendario {
     public void borrarTarea(String titulo) {
         this.tareas.remove(titulo);
     }
+
     public ArrayList<Tarea> getTareas() {
         return new ArrayList<>(this.tareas.values());
     }
@@ -38,12 +39,9 @@ public class Calendario {
         return true;
     }
 
-    public boolean borrarEvento(String titulo) {
-        if (eventos.containsKey(titulo)) {
-            this.eventos.remove(titulo);
-            return true;
-        }
-        return false;
+    public void borrarEvento(String titulo) {
+        this.eventos.remove(titulo);
+
     }
 
     public ArrayList<Evento> getEventos() {
