@@ -1,4 +1,5 @@
 import java.time.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 // LocalDate -> Fecha
@@ -9,12 +10,16 @@ public class Tarea {
     private String descripcion;
     private boolean completada = false;
     private LocalDateTime fechaDeVencimiento;
-    private final HashMap<LocalDateTime,Alarma> alarmas = new HashMap<>();
+    private final HashMap<LocalDateTime, Alarma> alarmas = new HashMap<>();
 
     public Tarea(String titulo, String descripcion, LocalDateTime fechaDeVencimiento) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaDeVencimiento = fechaDeVencimiento;
+    }
+
+    public String getTitulo() {
+        return this.titulo;
     }
 
     public boolean setTitulo(String nuevoTitulo) {
@@ -50,7 +55,11 @@ public class Tarea {
         return true;
     }
 
-    public void borrarAlarma(Alarma alarma) {
-        this.alarmas.remove(alarma.getFechaHoraDisparo());
+    public void borrarAlarma(LocalDateTime fechaHoraDisparo) {
+        this.alarmas.remove(fechaHoraDisparo);
+    }
+
+    public ArrayList<Alarma> getAlarmas() {
+        return new ArrayList<>(this.alarmas.values());
     }
 }

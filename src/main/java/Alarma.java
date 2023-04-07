@@ -4,7 +4,7 @@ import java.time.*;
 // LacalDateTime -> Fecha y hora
 
 public class Alarma {
-    private final LocalDateTime fechaHoraDisparo;
+    private LocalDateTime fechaHoraDisparo;
 
     // TODO: efectos.
 
@@ -14,5 +14,9 @@ public class Alarma {
 
     public LocalDateTime getFechaHoraDisparo() {
         return this.fechaHoraDisparo;
+    }
+
+    public void setFechaHoraDisparo(LocalDateTime fechaHoraDisparo) {
+        this.fechaHoraDisparo = fechaHoraDisparo;
     }
 }

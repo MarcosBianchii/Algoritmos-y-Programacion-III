@@ -29,8 +29,8 @@ public class Evento {
         this.setFecha(inicio, fin);
     }
 
-    public LocalDateTime getDuracion() {
-        return this.fin.minusNanos(this.inicio.getNano());
+    public String getTitulo() {
+        return this.titulo;
     }
 
     public boolean setTitulo(String nuevoTitulo) {
@@ -63,21 +63,22 @@ public class Evento {
         return true;
     }
 
-    public void borrarAlarma(Alarma alarma) {
-        this.alarmas.remove(alarma.getFechaHoraDisparo());
+    public void borrarAlarma(LocalDateTime fechaHoraDisparo) {
+        this.alarmas.remove(fechaHoraDisparo);
     }
 
-    public void setRepeticion(Repeticion repeticion, Integer cantidad) {
+    public boolean setRepeticion(Repeticion repeticion, Integer cantidad) {
         if (repeticion == Repeticion.SEMANAL)
-            return;
+            return false;
 
         this.cantidadRepeticiones = cantidad;
         this.repeticion = repeticion;
+        return true;
     }
 
-    public void setRepeticion(Repeticion repeticion, LocalDateTime fecha) {
+    public boolean setRepeticion(Repeticion repeticion, LocalDateTime fecha) {
         if (repeticion == Repeticion.SEMANAL)
-            return;
+            return false;
 
         long cantidad = 0;
         switch (repeticion) {
@@ -88,22 +89,31 @@ public class Evento {
 
         this.cantidadRepeticiones = Math.toIntExact(cantidad);
         this.repeticion = repeticion;
+        return true;
     }
 
-    public void setRepeticionSemanal(Repeticion repeticion, ArrayList<Boolean> dias, Integer cantidad) {
+    public void setRepeticionSemanal(ArrayList<Boolean> dias, Integer cantidad) {
         this.dias.clear();
         this.dias.addAll(dias);
         this.cantidadRepeticiones = cantidad;
-        this.repeticion = repeticion;
+        this.repeticion = Repeticion.SEMANAL;
     }
 
-    public void setRepeticionSemanal(Repeticion repeticion, ArrayList<Boolean> dias, LocalDateTime fecha) {
+    public void setRepeticionSemanal(ArrayList<Boolean> dias, LocalDateTime fecha) {
         this.dias.clear();
         this.dias.addAll(dias);
 
         long cantidad = this.inicio.until(fecha, ChronoUnit.WEEKS);
 
         this.cantidadRepeticiones = Math.toIntExact(cantidad);
-        this.repeticion = repeticion;
+        this.repeticion = Repeticion.SEMANAL;
+    }
+
+    public ArrayList<Boolean> getDias() {
+        return this.dias;
+    }
+
+    public ArrayList<Alarma> getAlarmas() {
+        return new ArrayList<>(this.alarmas.values());
     }
 }
