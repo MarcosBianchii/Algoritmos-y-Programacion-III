@@ -33,6 +33,18 @@ public class Evento {
         return this.titulo;
     }
 
+    public String getDescripcion() {
+        return this.descripcion;
+    }
+
+    public LocalDateTime getInicio() {
+        return this.inicio;
+    }
+
+    public LocalDateTime getFin() {
+        return this.fin;
+    }
+
     public boolean setTitulo(String nuevoTitulo) {
         if (nuevoTitulo.length() > 0) {
             this.titulo = nuevoTitulo;
@@ -43,7 +55,7 @@ public class Evento {
 
     public boolean setDescripcion(String nuevaDescripcion) {
         if (nuevaDescripcion.length() > 0) {
-            this.titulo = nuevaDescripcion;
+            this.descripcion = nuevaDescripcion;
             return true;
         }
         return false;
@@ -82,9 +94,9 @@ public class Evento {
 
         long cantidad = 0;
         switch (repeticion) {
-            case DIARIA -> cantidad = this.inicio.until(fecha, ChronoUnit.DAYS);
+            case DIARIA  -> cantidad = this.inicio.until(fecha, ChronoUnit.DAYS);
             case MENSUAL -> cantidad = this.inicio.until(fecha, ChronoUnit.MONTHS);
-            case ANUAL -> cantidad = this.inicio.until(fecha, ChronoUnit.YEARS);
+            case ANUAL   -> cantidad = this.inicio.until(fecha, ChronoUnit.YEARS);
         }
 
         this.cantidadRepeticiones = Math.toIntExact(cantidad);
@@ -107,6 +119,14 @@ public class Evento {
 
         this.cantidadRepeticiones = Math.toIntExact(cantidad);
         this.repeticion = Repeticion.SEMANAL;
+    }
+
+    public Repeticion getRepeticion() {
+        return this.repeticion;
+    }
+
+    public Integer getCantidadRepeticiones() {
+        return this.cantidadRepeticiones;
     }
 
     public ArrayList<Boolean> getDias() {

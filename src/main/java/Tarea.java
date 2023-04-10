@@ -8,18 +8,36 @@ import java.util.HashMap;
 public class Tarea {
     private String titulo;
     private String descripcion;
+    private boolean todoElDia;
     private boolean completada = false;
     private LocalDateTime fechaDeVencimiento;
-    private final HashMap<LocalDateTime, Alarma> alarmas = new HashMap<>();
+    private final HashMap<LocalDateTime,Alarma> alarmas = new HashMap<>();
 
-    public Tarea(String titulo, String descripcion, LocalDateTime fechaDeVencimiento) {
+    public Tarea(String titulo, String descripcion, LocalDateTime fechaDeVencimiento, boolean todoElDia) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaDeVencimiento = fechaDeVencimiento;
+        this.todoElDia = todoElDia;
     }
 
     public String getTitulo() {
         return this.titulo;
+    }
+
+    public String getDescripcion() {
+        return this.descripcion;
+    }
+
+    public boolean getTodoElDia() {
+        return this.todoElDia;
+    }
+
+    public boolean getCompletada() {
+        return this.completada;
+    }
+
+    public LocalDateTime getFechaDeVencimiento() {
+        return this.fechaDeVencimiento;
     }
 
     public boolean setTitulo(String nuevoTitulo) {
@@ -32,7 +50,7 @@ public class Tarea {
 
     public boolean setDescripcion(String nuevaDescripcion) {
         if (nuevaDescripcion.length() > 0) {
-            this.titulo = nuevaDescripcion;
+            this.descripcion = nuevaDescripcion;
             return true;
         }
         return false;
@@ -41,6 +59,15 @@ public class Tarea {
     public boolean toggleCompletacion() {
         this.completada = !this.completada;
         return this.completada;
+    }
+
+    public boolean toggleTodoElDia() {
+        this.todoElDia = !this.todoElDia;
+        return this.todoElDia;
+    }
+
+    public void setTodoElDia(boolean nuevoTodoElDia) {
+        this.todoElDia = nuevoTodoElDia;
     }
 
     public void setFechaDeVencimiento(LocalDateTime nuevaFechaDeVencimiento) {

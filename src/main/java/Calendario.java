@@ -1,9 +1,37 @@
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.*;
+
+class ComparadorAlarmas implements Comparator<Alarma> {
+    public int compare(Alarma a1, Alarma a2) {
+        return a1.getFechaHoraDisparo().compareTo(a2.getFechaHoraDisparo());
+    }
+}
 
 public class Calendario {
-    private final HashMap<String, Tarea> tareas = new HashMap<>();
-    private final HashMap<String, Evento> eventos = new HashMap<>();
+    private final PriorityQueue<Alarma> alarmas = new PriorityQueue<>(new ComparadorAlarmas());
+    private final HashMap<String,Tarea> tareas = new HashMap<>();
+    private final HashMap<String,Evento> eventos = new HashMap<>();
+
+    // Alarma
+    public void agregarAlarma(Tarea tarea, Alarma alarma) {
+        if (tarea.agregarAlarma(alarma))
+            this.alarmas.add(alarma);
+    }
+
+    public void agregarAlarma(Evento evento, Alarma alarma) {
+        if (evento.agregarAlarma(alarma))
+            this.alarmas.add(alarma);
+    }
+
+    public Alarma getProximaAlarma() {
+        return this.alarmas.peek();
+    }
+
+    public void dispararAlarma() {
+        if (this.alarmas.isEmpty())
+            return;
+
+        this.alarmas.poll().disparar();
+    }
 
     // Tareas
     public Tarea getTarea(String titulo) {
@@ -11,9 +39,6 @@ public class Calendario {
     }
 
     public boolean agregar(Tarea tarea) {
-        if (tareas.containsKey(tarea.getTitulo()))
-            return false;
-
         this.tareas.put(tarea.getTitulo(), tarea);
         return true;
     }
@@ -32,16 +57,12 @@ public class Calendario {
     }
 
     public boolean agregar(Evento evento) {
-        if (eventos.containsKey(evento.getTitulo()))
-            return false;
-
         this.eventos.put(evento.getTitulo(), evento);
         return true;
     }
 
     public void borrarEvento(String titulo) {
         this.eventos.remove(titulo);
-
     }
 
     public ArrayList<Evento> getEventos() {
