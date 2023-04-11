@@ -1,3 +1,4 @@
+import java.time.*;
 import java.util.*;
 
 class ComparadorAlarmas implements Comparator<Alarma> {
@@ -8,19 +9,8 @@ class ComparadorAlarmas implements Comparator<Alarma> {
 
 public class Calendario {
     private final PriorityQueue<Alarma> alarmas = new PriorityQueue<>(new ComparadorAlarmas());
-    private final HashMap<String,Tarea> tareas = new HashMap<>();
-    private final HashMap<String,Evento> eventos = new HashMap<>();
-
-    // Alarma
-    public void agregarAlarma(Tarea tarea, Alarma alarma) {
-        if (tarea.agregarAlarma(alarma))
-            this.alarmas.add(alarma);
-    }
-
-    public void agregarAlarma(Evento evento, Alarma alarma) {
-        if (evento.agregarAlarma(alarma))
-            this.alarmas.add(alarma);
-    }
+    private final HashMap<LocalDate,ArrayList<Tarea>> tareas = new HashMap<>();
+    private final HashMap<LocalDate,ArrayList<Evento>> eventos = new HashMap<>();
 
     public Alarma getProximaAlarma() {
         return this.alarmas.peek();
@@ -34,38 +24,72 @@ public class Calendario {
     }
 
     // Tareas
-    public Tarea getTarea(String titulo) {
-        return this.tareas.get(titulo);
+    private void agregar(Tarea tarea) {
+        var lista = this.tareas.get(tarea.getFechaDeVencimiento().toLocalDate());
+        if (lista == null) {
+            lista = new ArrayList<>();
+            this.tareas.put(tarea.getFechaDeVencimiento().toLocalDate(), lista);
+        }
+
+        lista.add(tarea);
+        this.alarmas.addAll(tarea.getAlarmas());
     }
 
-    public boolean agregar(Tarea tarea) {
-        this.tareas.put(tarea.getTitulo(), tarea);
-        return true;
+    public void crear(String titulo, String descripcion, LocalDateTime fechaDeVencimiento, boolean todoElDia) {
+        var tarea = new Tarea(titulo, descripcion, fechaDeVencimiento, todoElDia);
+        this.agregar(tarea);
     }
 
-    public void borrarTarea(String titulo) {
-        this.tareas.remove(titulo);
+    public void crear(String titulo, String descripcion, LocalDateTime fechaDeVencimiento, boolean todoElDia, ArrayList<Alarma> alarmas) {
+        var tarea = new Tarea(titulo, descripcion, fechaDeVencimiento, todoElDia);
+        tarea.setAlarmas(alarmas);
+        this.agregar(tarea);
     }
 
-    public ArrayList<Tarea> getTareas() {
-        return new ArrayList<>(this.tareas.values());
+    public void eliminar(Tarea tarea) {
+        var lista = this.tareas.get(tarea.getFechaDeVencimiento().toLocalDate());
+        if (lista == null)
+            return;
+
+        lista.remove(tarea);
+        this.alarmas.removeAll(tarea.getAlarmas());
     }
 
     // Eventos
-    public Evento getEvento(String titulo) {
-        return this.eventos.get(titulo);
+    private void agregar(Evento evento) {
+        var lista = this.eventos.get(evento.getInicio().toLocalDate());
+        if (lista == null) {
+            lista = new ArrayList<>();
+            this.eventos.put(evento.getInicio().toLocalDate(), lista);
+        }
+
+        lista.add(evento);
+        this.alarmas.addAll(evento.getAlarmas());
     }
 
-    public boolean agregar(Evento evento) {
-        this.eventos.put(evento.getTitulo(), evento);
-        return true;
+    public void crear(String titulo, String descripcion, LocalDateTime inicio, LocalDateTime fin) {
+        var evento = new Evento(titulo, descripcion, inicio, fin);
+        this.agregar(evento);
     }
 
-    public void borrarEvento(String titulo) {
-        this.eventos.remove(titulo);
+    public void crear(String titulo, String descripcion, LocalDateTime inicio, LocalDateTime fin, ArrayList<Alarma> alarmas) {
+        var evento = new Evento(titulo, descripcion, inicio, fin);
+        evento.setAlarmas(alarmas);
+        this.agregar(evento);
     }
 
-    public ArrayList<Evento> getEventos() {
-        return new ArrayList<>(this.eventos.values());
+    public void eliminar(Evento evento) {
+        var lista = this.eventos.get(evento.getInicio().toLocalDate());
+        if (lista == null)
+            return;
+
+        lista.remove(evento);
+        this.alarmas.removeAll(evento.getAlarmas());
     }
+
+    // TODO: agregar metodo de conseguir lo de un cierto intervalo de tiempo (en dias)
+    // TODO: agregar metodos de creacion de eventos
+    // TODO: agregar metodos de creacion de alarmas
+    // TODO: agregar metodos para modificar items
+    // TODO: agregar tests para todo
 }

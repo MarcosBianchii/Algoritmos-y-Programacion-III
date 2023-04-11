@@ -125,6 +125,12 @@ public class Evento {
         return this.repeticion;
     }
 
+    public void setAlarmas(ArrayList<Alarma> alarmas) {
+        this.alarmas.clear();
+        for (Alarma alarma : alarmas)
+            this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
+    }
+
     public Integer getCantidadRepeticiones() {
         return this.cantidadRepeticiones;
     }

@@ -9,8 +9,9 @@ public class Tarea {
     private String titulo;
     private String descripcion;
     private boolean todoElDia;
-    private boolean completada = false;
     private LocalDateTime fechaDeVencimiento;
+
+    private boolean completada = false;
     private final HashMap<LocalDateTime,Alarma> alarmas = new HashMap<>();
 
     public Tarea(String titulo, String descripcion, LocalDateTime fechaDeVencimiento, boolean todoElDia) {
@@ -84,6 +85,13 @@ public class Tarea {
 
     public void borrarAlarma(LocalDateTime fechaHoraDisparo) {
         this.alarmas.remove(fechaHoraDisparo);
+    }
+
+    public void setAlarmas(ArrayList<Alarma> nuevasAlarmas) {
+        this.alarmas.clear();
+        for (Alarma alarma : nuevasAlarmas) {
+            this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
+        }
     }
 
     public ArrayList<Alarma> getAlarmas() {
