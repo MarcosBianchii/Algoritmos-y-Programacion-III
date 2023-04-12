@@ -2,7 +2,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import java.time.LocalDateTime;
 
-public class AlarmaTest {
+public class AlarmaTest { // Estan estos tests aunque son inutiles
     @Test
     public void testCrearAlarma() {
         var ahora = LocalDateTime.now();

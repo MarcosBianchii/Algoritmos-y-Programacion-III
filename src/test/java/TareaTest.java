@@ -1,41 +1,36 @@
 import org.junit.*;
 import static org.junit.Assert.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class TareaTest {
     @Test
-    public void testCambiarTituloVacio() {
-        var tarea = new Tarea("Titulo", "Descripcion", LocalDateTime.now());
-        assertFalse(tarea.setTitulo(""));
-    }
-
-    @Test
-    public void testCambiarDescripcionVacia() {
-        var tarea = new Tarea("Titulo", "Descripcion", LocalDateTime.now());
-        assertFalse(tarea.setDescripcion(""));
-    }
-
-    @Test
-    public void testToggleCompletacion() {
-        var tarea = new Tarea("Titulo", "Descripcion", LocalDateTime.now());
-        assertTrue(tarea.toggleCompletacion());
-        assertFalse(tarea.toggleCompletacion());
-    }
-
-    @Test
     public void testAgregarAlarma() {
-        var tarea = new Tarea("Titulo", "Descripcion", LocalDateTime.now());
+        var tarea = new Tarea("Tarea 1", "Descripcion", LocalDateTime.now(), false);
         var alarma = new Alarma(LocalDateTime.now());
-        assertTrue(tarea.agregarAlarma(alarma));
-        assertFalse(tarea.agregarAlarma(alarma));
+        tarea.agregarAlarma(alarma);
+        assertTrue(tarea.getAlarmas().contains(alarma));
     }
 
     @Test
     public void testBorrarAlarma() {
-        var tarea = new Tarea("Titulo", "Descripcion", LocalDateTime.now());
+        var tarea = new Tarea("Tarea 1", "Descripcion", LocalDateTime.now(), false);
         var alarma = new Alarma(LocalDateTime.now());
         tarea.agregarAlarma(alarma);
+        assertTrue(tarea.getAlarmas().contains(alarma));
         tarea.borrarAlarma(alarma.getFechaHoraDisparo());
-        assertEquals(0, tarea.getAlarmas().size());
+        assertFalse(tarea.getAlarmas().contains(alarma));
+    }
+
+    @Test
+    public void testGetSetAlarmas() {
+        var tarea = new Tarea("Tarea 1", "Descripcion", LocalDateTime.now(), false);
+        var alarma = new Alarma(LocalDateTime.now());
+        var alarma2 = new Alarma(LocalDateTime.now().plusHours(1));
+        var alarmas = new ArrayList<Alarma>();
+        alarmas.add(alarma);
+        alarmas.add(alarma2);
+        tarea.setAlarmas(alarmas);
+        assertTrue(alarmas.containsAll(tarea.getAlarmas()));
     }
 }

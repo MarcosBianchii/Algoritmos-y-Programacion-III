@@ -6,65 +6,82 @@ import java.util.Arrays;
 
 public class CalendarioTest {
     @Test
-    public void testGetTareaInexistente() {
-        Calendario calendario = new Calendario();
-        assertNull(calendario.getTarea("Tarea 1"));
+    public void testConseguirItemsDesdeHasta() {
+        var momento0 = LocalDateTime.of(2020, 1, 1, 0, 0);
+        var momento1 = momento0.plusWeeks(1);
+        var momento2 = momento1.plusYears(10);
+
+        var calendario = new Calendario();
+        var tarea0 = calendario.crear("Tarea 0", "Descripcion 0", momento0, false);
+        var tarea1 = calendario.crear("Tarea 1", "Descripcion 1", momento1, false);
+        var tarea2 = calendario.crear("Tarea 2", "Descripcion 2", momento2, false);
+        var evento0 = calendario.crear("Evento 0", "Descripcion 0", momento0, momento0);
+        var evento1 = calendario.crear("Evento 1", "Descripcion 1", momento1, momento1);
+        var evento2 = calendario.crear("Evento 2", "Descripcion 2", momento2, momento2);
+
+        var tareas1 = calendario.getTareas(momento0, momento1);
+        var eventos1 = calendario.getEventos(momento0, momento1);
+        assertEquals(1, tareas1.size());
+        assertEquals(1, eventos1.size());
+        assertTrue(tareas1.contains(tarea0));
+        assertTrue(eventos1.contains(evento0));
+
+        var tareas2 = calendario.getTareas(momento0, momento2);
+        var eventos2 = calendario.getEventos(momento0, momento2);
+        assertEquals(2, tareas2.size());
+        assertEquals(2, eventos2.size());
+        assertTrue(tareas2.contains(tarea0));
+        assertTrue(tareas2.contains(tarea1));
     }
 
     @Test
-    public void testAgregarTarea() {
-        Calendario calendario = new Calendario();
-        Tarea tarea = new Tarea("Tarea 1", "Descripcion", LocalDateTime.now());
-        assertTrue(calendario.agregar(tarea));
-        assertEquals(tarea, calendario.getTarea("Tarea 1"));
+    public void testEliminarItems() {
+        var momento0 = LocalDateTime.of(2020, 1, 1, 0, 0);
+        var momento1 = momento0.plusWeeks(1);
+        var momento2 = momento1.plusYears(10);
+
+        var calendario = new Calendario();
+        var tarea0 = calendario.crear("Tarea 0", "Descripcion 0", momento0, false);
+        var tarea1 = calendario.crear("Tarea 1", "Descripcion 1", momento1, false);
+        var tarea2 = calendario.crear("Tarea 2", "Descripcion 2", momento2, false);
+        var evento0 = calendario.crear("Evento 0", "Descripcion 0", momento0, momento0);
+        var evento1 = calendario.crear("Evento 1", "Descripcion 1", momento1, momento1);
+        var evento2 = calendario.crear("Evento 2", "Descripcion 2", momento2, momento2);
+
+        assertTrue(calendario.getTareas(momento0, momento2).contains(tarea1));
+        assertTrue(calendario.getEventos(momento0, momento2).contains(evento1));
+
+        calendario.eliminar(tarea1);
+        calendario.eliminar(evento1);
+        var tareas = calendario.getTareas(momento0, momento2);
+        var eventos = calendario.getEventos(momento0, momento2);
+        assertEquals(1, tareas.size());
+        assertEquals(1, eventos.size());
+        assertFalse(tareas.contains(tarea1));
+        assertFalse(eventos.contains(evento1));
     }
 
     @Test
-    public void testBorrarTarea() {
-        Calendario calendario = new Calendario();
-        Tarea tarea = new Tarea("Tarea 1", "Descripcion", LocalDateTime.now());
-        calendario.agregar(tarea);
-        calendario.borrarTarea("Tarea 1");
-        assertNull(calendario.getTarea("Tarea 1"));
-    }
+    public void testAgregarBorrarAlarmas() {
+        var momento = LocalDateTime.of(2020, 1, 1, 0, 0);
+        var calendario = new Calendario();
 
-    @Test
-    public void testGetTarea() {
-        Calendario calendario = new Calendario();
-        Tarea tarea1 = new Tarea("Tarea 1", "Descripcion", LocalDateTime.now());
-        Tarea tarea2 = new Tarea("Tarea 2", "Descripcion", LocalDateTime.now());
-        calendario.agregar(tarea1);
-        calendario.agregar(tarea2);
-        ArrayList<Tarea> tareas = new ArrayList<>(Arrays.asList(tarea2, tarea1));
-        assertEquals(tareas, calendario.getTareas());
-    }
+        var tarea0 = calendario.crear("Tarea 0", "Descripcion 0", momento, false);
+        var tarea1 = calendario.crear("Tarea 2", "Descripcion 2", momento, false);
+        var evento = calendario.crear("Evento 0", "Descripcion 0", momento, momento);
 
-    @Test
-    public void testAgregarEvento() {
-        Calendario calendario = new Calendario();
-        Evento evento = new Evento("Evento 1", "Descripcion", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        assertTrue(calendario.agregar(evento));
-        assertEquals(evento, calendario.getEvento("Evento 1"));
-    }
+        var alarmaTarea0 = new Alarma(momento);
+        var alarmaTarea1 = new Alarma(momento.plusMonths(1));
+        var alarmaEvento = new Alarma(momento.plusMonths(2));
 
+        calendario.agregarAlarma(tarea0, alarmaTarea0);
+        calendario.agregarAlarma(tarea1, alarmaTarea1);
+        calendario.agregarAlarma(evento, alarmaEvento);
 
-    @Test
-    public void testBorrarEvento() {
-        Calendario calendario = new Calendario();
-        Evento evento = new Evento("Evento 1", "Descripcion", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        calendario.agregar(evento);
-        calendario.borrarEvento("Evento 1");
-        assertNull(calendario.getEvento("Evento 1"));
-    }
-
-    @Test
-    public void testGetEventos() {
-        Calendario calendario = new Calendario();
-        Evento evento1 = new Evento("Evento 1", "Descripcion", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        Evento evento2 = new Evento("Evento 2", "Descripcion", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        calendario.agregar(evento1);
-        calendario.agregar(evento2);
-        ArrayList<Evento> eventos = new ArrayList<>(Arrays.asList(evento1, evento2));
-        assertEquals(eventos, calendario.getEventos());
+        assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(momento));
+        calendario.dispararAlarma();
+        assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarmaTarea1.getFechaHoraDisparo()));
+        calendario.borrarAlarma(tarea1, alarmaTarea1);
+        assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarmaEvento.getFechaHoraDisparo()));
     }
 }

@@ -21,7 +21,7 @@ public class Evento {
 
     private Repeticion repeticion = Repeticion.NOTIENE;
     private final ArrayList<Boolean> dias = new ArrayList<>(Arrays.asList(false, false, false, false, false, false, false));
-    private Integer cantidadRepeticiones = 0;
+    private int cantidadRepeticiones = 0;
 
     public Evento(String titulo, String descripcion, LocalDateTime inicio, LocalDateTime fin) {
         this.titulo = titulo;
@@ -45,20 +45,20 @@ public class Evento {
         return this.fin;
     }
 
-    public boolean setTitulo(String nuevoTitulo) {
-        if (nuevoTitulo.length() > 0) {
-            this.titulo = nuevoTitulo;
-            return true;
-        }
-        return false;
+    public Repeticion getRepeticion() {
+        return this.repeticion;
     }
 
-    public boolean setDescripcion(String nuevaDescripcion) {
-        if (nuevaDescripcion.length() > 0) {
-            this.descripcion = nuevaDescripcion;
-            return true;
-        }
-        return false;
+    public int getCantidadRepeticiones() {
+        return this.cantidadRepeticiones;
+    }
+
+    public void setTitulo(String nuevoTitulo) {
+        this.titulo = nuevoTitulo;
+    }
+
+    public void setDescripcion(String nuevaDescripcion) {
+        this.descripcion = nuevaDescripcion;
     }
 
     // Se considera que las fechas estan en orden.
@@ -67,31 +67,20 @@ public class Evento {
         this.fin = fin;
     }
 
-    public boolean agregarAlarma(Alarma alarma) {
-        if (alarmas.containsKey(alarma.getFechaHoraDisparo()))
-                return false;
-
+    public void agregarAlarma(Alarma alarma) {
         this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
-        return true;
     }
 
     public void borrarAlarma(LocalDateTime fechaHoraDisparo) {
         this.alarmas.remove(fechaHoraDisparo);
     }
 
-    public boolean setRepeticion(Repeticion repeticion, Integer cantidad) {
-        if (repeticion == Repeticion.SEMANAL)
-            return false;
-
+    public void  setRepeticion(Repeticion repeticion, Integer cantidad) {
         this.cantidadRepeticiones = cantidad;
         this.repeticion = repeticion;
-        return true;
     }
 
-    public boolean setRepeticion(Repeticion repeticion, LocalDateTime fecha) {
-        if (repeticion == Repeticion.SEMANAL)
-            return false;
-
+    public void setRepeticion(Repeticion repeticion, LocalDateTime fecha) {
         long cantidad = 0;
         switch (repeticion) {
             case DIARIA  -> cantidad = this.inicio.until(fecha, ChronoUnit.DAYS);
@@ -101,7 +90,6 @@ public class Evento {
 
         this.cantidadRepeticiones = Math.toIntExact(cantidad);
         this.repeticion = repeticion;
-        return true;
     }
 
     public void setRepeticionSemanal(ArrayList<Boolean> dias, Integer cantidad) {
@@ -111,28 +99,20 @@ public class Evento {
         this.repeticion = Repeticion.SEMANAL;
     }
 
-    public void setRepeticionSemanal(ArrayList<Boolean> dias, LocalDateTime fecha) {
+    public void setRepeticionSemanal(ArrayList<Boolean> dias, LocalDateTime hasta) {
         this.dias.clear();
         this.dias.addAll(dias);
 
-        long cantidad = this.inicio.until(fecha, ChronoUnit.WEEKS);
+        long cantidad = this.inicio.until(hasta, ChronoUnit.WEEKS);
 
         this.cantidadRepeticiones = Math.toIntExact(cantidad);
         this.repeticion = Repeticion.SEMANAL;
-    }
-
-    public Repeticion getRepeticion() {
-        return this.repeticion;
     }
 
     public void setAlarmas(ArrayList<Alarma> alarmas) {
         this.alarmas.clear();
         for (Alarma alarma : alarmas)
             this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
-    }
-
-    public Integer getCantidadRepeticiones() {
-        return this.cantidadRepeticiones;
     }
 
     public ArrayList<Boolean> getDias() {

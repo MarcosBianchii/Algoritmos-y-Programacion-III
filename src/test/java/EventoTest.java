@@ -6,62 +6,72 @@ import java.util.Arrays;
 
 public class EventoTest {
     @Test
-    public void testSetTitulo() {
-        var evento = new Evento("Evento 1", "Descripcion 1", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        assertTrue(evento.setTitulo("Evento 2"));
-        assertFalse(evento.setTitulo(""));
-    }
-
-    @Test
-    public void testSetDescripcion() {
-        var evento = new Evento("Evento 1", "Descripcion 1", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        assertTrue(evento.setDescripcion("Descripcion 2"));
-        assertFalse(evento.setDescripcion(""));
-    }
-
-    @Test
     public void testAgregarAlarma() {
-        var evento = new Evento("Evento 1", "Descripcion 1", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        var alarma = new Alarma(LocalDateTime.now());
-        assertTrue(evento.agregarAlarma(alarma));
-        assertFalse(evento.agregarAlarma(alarma));
+        var momento = LocalDateTime.now();
+        var evento = new Evento("Evento 1", "Descripcion 1", momento, momento);
+        var alarma = new Alarma(momento);
+        evento.agregarAlarma(alarma);
+        assertTrue(evento.getAlarmas().contains(alarma));
     }
 
     @Test
     public void testBorrarAlarma() {
-        var evento = new Evento("Evento 1", "Descripcion 1", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        var alarma = new Alarma(LocalDateTime.now());
+        var momento = LocalDateTime.now();
+        var evento = new Evento("Evento 1", "Descripcion 1", momento, momento);
+        var alarma = new Alarma(momento);
         evento.agregarAlarma(alarma);
+        assertTrue(evento.getAlarmas().contains(alarma));
         evento.borrarAlarma(alarma.getFechaHoraDisparo());
-        assertEquals(0, evento.getAlarmas().size());
+        assertFalse(evento.getAlarmas().contains(alarma));
     }
 
     @Test
-    public void testSetRepeticion() {
-        var evento = new Evento("Evento 1", "Descripcion 1", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        assertTrue(evento.setRepeticion(Repeticion.DIARIA, 1));
-        assertTrue(evento.setRepeticion(Repeticion.DIARIA, LocalDateTime.now()));
-        assertFalse(evento.setRepeticion(Repeticion.SEMANAL, 1));
-        assertFalse(evento.setRepeticion(Repeticion.SEMANAL, LocalDateTime.now()));
-        assertTrue(evento.setRepeticion(Repeticion.MENSUAL, 1));
-        assertTrue(evento.setRepeticion(Repeticion.MENSUAL, LocalDateTime.now()));
-        assertTrue(evento.setRepeticion(Repeticion.ANUAL, 1));
-        assertTrue(evento.setRepeticion(Repeticion.ANUAL, LocalDateTime.now().plusYears(1)));
+    public void testGetSetAlarmas() {
+        var momento = LocalDateTime.now();
+        var evento = new Evento("Tarea 1", "Descripcion", momento, momento);
+        var alarma = new Alarma(momento);
+        var alarma2 = new Alarma(momento.plusHours(1));
+        var alarmas = new ArrayList<Alarma>();
+        alarmas.add(alarma);
+        alarmas.add(alarma2);
+        evento.setAlarmas(alarmas);
+        assertTrue(alarmas.containsAll(evento.getAlarmas()));
     }
 
     @Test
-    public void testSetRepeticionSemanal() {
-        var evento = new Evento("Titulo", "Descripcion", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        var dias = new ArrayList<>(Arrays.asList(true, false, false, false, false, false, false));
-        evento.setRepeticionSemanal(new ArrayList<>(dias), 1);
-        assertEquals(dias, evento.getDias());
+    public void testSetRepeticionAnioBisiesto() {
+        testSetRepeticionFecha(LocalDateTime.of(2023, 4, 12, 12, 0));
     }
 
     @Test
-    public void testGetAlarmas() {
-        var evento = new Evento("Titulo", "Descripcion", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        var alarma = new Alarma(LocalDateTime.now());
-        evento.agregarAlarma(alarma);
-        assertEquals(alarma, evento.getAlarmas().get(0));
+    public void testSetRepeticionAnioNoBisiesto() {
+        testSetRepeticionFecha(LocalDateTime.of(2022, 4, 12, 12, 0));
+    }
+
+    private void testSetRepeticionFecha(LocalDateTime momento) {
+        var evento = new Evento("Evento 1", "Descripcion 1", momento, momento);
+
+        // Repeticion diaria
+        evento.setRepeticion(Repeticion.DIARIA, evento.getInicio().plusYears(1));
+        var diasEnAnio = momento.getYear() % 4 == 3 ? 366 : 365; // No funcionaba el toLocalTime().isLeapYear()
+        assertEquals(Repeticion.DIARIA, evento.getRepeticion());
+        assertEquals(diasEnAnio, evento.getCantidadRepeticiones());
+
+        // Repeticion semanal
+        var dias = new ArrayList<>(Arrays.asList(true, false, false, false, true, false, false));
+        evento.setRepeticionSemanal(dias, momento.plusWeeks(10));
+        assertEquals(Repeticion.SEMANAL, evento.getRepeticion());
+        assertEquals(10, evento.getCantidadRepeticiones());
+        assertTrue(dias.containsAll(evento.getDias()));
+
+        // Repeticion mensual
+        evento.setRepeticion(Repeticion.MENSUAL, evento.getInicio().plusYears(1));
+        assertEquals(Repeticion.MENSUAL, evento.getRepeticion());
+        assertEquals(12, evento.getCantidadRepeticiones());
+
+        // Repeticion anual
+        evento.setRepeticion(Repeticion.ANUAL, evento.getInicio().plusYears(5));
+        assertEquals(Repeticion.ANUAL, evento.getRepeticion());
+        assertEquals(5, evento.getCantidadRepeticiones());
     }
 }

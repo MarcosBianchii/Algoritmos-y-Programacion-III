@@ -29,7 +29,7 @@ public class Tarea {
         return this.descripcion;
     }
 
-    public boolean getTodoElDia() {
+    public boolean getEsTodoElDia() {
         return this.todoElDia;
     }
 
@@ -41,20 +41,16 @@ public class Tarea {
         return this.fechaDeVencimiento;
     }
 
-    public boolean setTitulo(String nuevoTitulo) {
-        if (nuevoTitulo.length() > 0) {
-            this.titulo = nuevoTitulo;
-            return true;
-        }
-        return false;
+    public void setTitulo(String nuevoTitulo) {
+        this.titulo = nuevoTitulo;
     }
 
-    public boolean setDescripcion(String nuevaDescripcion) {
-        if (nuevaDescripcion.length() > 0) {
-            this.descripcion = nuevaDescripcion;
-            return true;
-        }
-        return false;
+    public void setDescripcion(String nuevaDescripcion) {
+        this.descripcion = nuevaDescripcion;
+    }
+
+    public void setFechaDeVencimiento(LocalDateTime nuevaFechaDeVencimiento) {
+        this.fechaDeVencimiento = nuevaFechaDeVencimiento;
     }
 
     public boolean toggleCompletacion() {
@@ -67,20 +63,8 @@ public class Tarea {
         return this.todoElDia;
     }
 
-    public void setTodoElDia(boolean nuevoTodoElDia) {
-        this.todoElDia = nuevoTodoElDia;
-    }
-
-    public void setFechaDeVencimiento(LocalDateTime nuevaFechaDeVencimiento) {
-        this.fechaDeVencimiento = nuevaFechaDeVencimiento;
-    }
-
-    public boolean agregarAlarma(Alarma alarma) {
-        if (alarmas.containsKey(alarma.getFechaHoraDisparo()))
-            return false;
-
+    public void agregarAlarma(Alarma alarma) {
         this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
-        return true;
     }
 
     public void borrarAlarma(LocalDateTime fechaHoraDisparo) {
