@@ -5,34 +5,40 @@ import java.time.*;
 
 public class Alarma {
     private LocalDateTime fechaHoraDisparo;
+    private boolean mandaMail = false;
+    private boolean suena = false;
+    private boolean muestraNotificacion = false;
     // private Sonido sonido;
-    private String mail = null;
-    private boolean notificacion = false;
 
     public Alarma(LocalDateTime fechaHoraDisparo) { // Sonido sonido
         this.fechaHoraDisparo = fechaHoraDisparo;
+    }
+
+    public void setConfig(boolean mandaMail, boolean suena, boolean muestraNotificacion) {
+        this.mandaMail = mandaMail;
+        this.suena = suena;
+        this.muestraNotificacion = muestraNotificacion;
     }
 
     public LocalDateTime getFechaHoraDisparo() {
         return this.fechaHoraDisparo;
     }
 
-    public boolean toggleNotificacion() {
-        this.notificacion = !this.notificacion;
-        return this.notificacion;
-    }
-
-    public void setEmail(String mail) {
-        this.mail = mail;
-    }
-
     public void setFechaHoraDisparo(LocalDateTime fechaHoraDisparo) {
         this.fechaHoraDisparo = fechaHoraDisparo;
     }
 
-    public void disparar() {
-        // TODO: Hacer sonar la alarma.
-        // TODO: Enviar mail.
-        // TODO: Mandar notificacion.
+    public void disparar(String mail) {
+        if (this.mandaMail) {
+            System.out.println("Enviando mail a " + mail);
+        }
+
+        if (this.suena) {
+            System.out.println("Sonando");
+        }
+
+        if (this.muestraNotificacion) {
+            System.out.println("Mostrando notificacion");
+        }
     }
 }

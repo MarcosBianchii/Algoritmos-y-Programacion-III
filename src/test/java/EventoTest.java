@@ -21,7 +21,7 @@ public class EventoTest {
         var alarma = new Alarma(momento);
         evento.agregarAlarma(alarma);
         assertTrue(evento.getAlarmas().contains(alarma));
-        evento.borrarAlarma(alarma.getFechaHoraDisparo());
+        evento.borrarAlarma(alarma);
         assertFalse(evento.getAlarmas().contains(alarma));
     }
 
@@ -34,7 +34,7 @@ public class EventoTest {
         var alarmas = new ArrayList<Alarma>();
         alarmas.add(alarma);
         alarmas.add(alarma2);
-        evento.setAlarmas(alarmas);
+        evento.agregarAlarmas(alarmas);
         assertTrue(alarmas.containsAll(evento.getAlarmas()));
     }
 
@@ -49,13 +49,21 @@ public class EventoTest {
     }
 
     private void testSetRepeticionFecha(LocalDateTime momento) {
-        var evento = new Evento("Evento 1", "Descripcion 1", momento, momento);
+        var evento = new EventoRepetible("Evento 1", "Descripcion 1", momento, momento);
 
         // Repeticion diaria
-        evento.setRepeticion(Repeticion.DIARIA, evento.getInicio().plusYears(1));
-        var diasEnAnio = momento.getYear() % 4 == 3 ? 366 : 365; // No funcionaba el toLocalTime().isLeapYear()
+        int intervalo = 3;
+        evento.setRepeticionDiaria(intervalo, evento.getIdTiempo().plusMonths(1));
+        int resultado = 0;
+        var desde = momento;
+        var hasta = momento.plusMonths(1);
+        while (desde.isBefore(hasta)) {
+            resultado++;
+            desde = desde.plusDays(intervalo);
+        }
+
         assertEquals(Repeticion.DIARIA, evento.getRepeticion());
-        assertEquals(diasEnAnio, evento.getCantidadRepeticiones());
+        assertEquals(resultado, evento.getCantidadRepeticiones());
 
         // Repeticion semanal
         var dias = new ArrayList<>(Arrays.asList(true, false, false, false, true, false, false));
@@ -65,12 +73,12 @@ public class EventoTest {
         assertTrue(dias.containsAll(evento.getDias()));
 
         // Repeticion mensual
-        evento.setRepeticion(Repeticion.MENSUAL, evento.getInicio().plusYears(1));
+        evento.setRepeticion(Repeticion.MENSUAL, evento.getIdTiempo().plusYears(1));
         assertEquals(Repeticion.MENSUAL, evento.getRepeticion());
         assertEquals(12, evento.getCantidadRepeticiones());
 
         // Repeticion anual
-        evento.setRepeticion(Repeticion.ANUAL, evento.getInicio().plusYears(5));
+        evento.setRepeticion(Repeticion.ANUAL, evento.getIdTiempo().plusYears(5));
         assertEquals(Repeticion.ANUAL, evento.getRepeticion());
         assertEquals(5, evento.getCantidadRepeticiones());
     }

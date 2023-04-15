@@ -1,16 +1,20 @@
 import java.time.*;
 import java.util.*;
 
-class ComparadorAlarmas implements Comparator<Alarma> {
-    public int compare(Alarma a1, Alarma a2) {
-        return a1.getFechaHoraDisparo().compareTo(a2.getFechaHoraDisparo());
-    }
-}
-
 public class Calendario {
+    static class ComparadorAlarmas implements Comparator<Alarma> {
+        public int compare(Alarma a1, Alarma a2) {
+            return a1.getFechaHoraDisparo().compareTo(a2.getFechaHoraDisparo());
+        }
+    }
+
     private final PriorityQueue<Alarma> alarmas = new PriorityQueue<>(new ComparadorAlarmas());
-    private final HashMap<LocalDate,ArrayList<Tarea>> tareas = new HashMap<>();
-    private final HashMap<LocalDate,ArrayList<Evento>> eventos = new HashMap<>();
+    private final HashMap<LocalDate,ArrayList<Item>> items = new HashMap<>();
+    private final String mail;
+
+    public Calendario(String mail) {
+        this.mail = mail;
+    }
 
     public Alarma getProximaAlarma() {
         return this.alarmas.peek();
@@ -20,89 +24,49 @@ public class Calendario {
         if (this.alarmas.isEmpty())
             return;
 
-        this.alarmas.poll().disparar();
+        this.alarmas.poll().disparar(this.mail);
     }
 
-    // Tareas
-    private void agregar(Tarea tarea) {
-        var lista = this.tareas.get(tarea.getFechaDeVencimiento().toLocalDate());
+    public void agregar(Item item) {
+        var lista = this.items.get(item.getIdTiempo().toLocalDate());
         if (lista == null) {
             lista = new ArrayList<>();
-            this.tareas.put(tarea.getFechaDeVencimiento().toLocalDate(), lista);
+            this.items.put(item.getIdTiempo().toLocalDate(), lista);
         }
 
-        lista.add(tarea);
-        this.alarmas.addAll(tarea.getAlarmas());
+        lista.add(item);
+        this.alarmas.addAll(item.getAlarmas());
     }
 
-    public Tarea crear(String titulo, String descripcion, LocalDateTime fechaDeVencimiento, boolean todoElDia) {
-        var tarea = new Tarea(titulo, descripcion, fechaDeVencimiento, todoElDia);
-        this.agregar(tarea);
-        return tarea;
-    }
-
-    public void agregarAlarma(Tarea tarea, Alarma alarma) {
-        tarea.agregarAlarma(alarma);
+    public void agregarAlarma(Item item, Alarma alarma) {
+        item.agregarAlarma(alarma);
         this.alarmas.add(alarma);
     }
 
-    public void borrarAlarma(Tarea tarea, Alarma alarma) {
-        tarea.borrarAlarma(alarma.getFechaHoraDisparo());
+    public void agregarAlarmas(Item item, ArrayList<Alarma> alarmas) {
+        item.agregarAlarmas(alarmas);
+        this.alarmas.addAll(alarmas);
+    }
+
+    public void borrarAlarma(Item item, Alarma alarma) {
+        item.borrarAlarma(alarma);
         this.alarmas.remove(alarma);
     }
 
-    public void eliminar(Tarea tarea) {
-        var lista = this.tareas.get(tarea.getFechaDeVencimiento().toLocalDate());
+    public void eliminar(Item item) {
+        var lista = this.items.get(item.getIdTiempo().toLocalDate());
         if (lista == null)
             return;
 
-        lista.remove(tarea);
-        this.alarmas.removeAll(tarea.getAlarmas());
+        lista.remove(item);
+        this.alarmas.removeAll(item.getAlarmas());
     }
 
-    // Eventos
-    private void agregar(Evento evento) {
-        var lista = this.eventos.get(evento.getInicio().toLocalDate());
-        if (lista == null) {
-            lista = new ArrayList<>();
-            this.eventos.put(evento.getInicio().toLocalDate(), lista);
-        }
-
-        lista.add(evento);
-        this.alarmas.addAll(evento.getAlarmas());
-    }
-
-    public Evento crear(String titulo, String descripcion, LocalDateTime inicio, LocalDateTime fin) {
-        var evento = new Evento(titulo, descripcion, inicio, fin);
-        this.agregar(evento);
-        return evento;
-    }
-
-    public void agregarAlarma(Evento evento, Alarma alarma) {
-        evento.agregarAlarma(alarma);
-        this.alarmas.add(alarma);
-    }
-
-    public void borrarAlarma(Evento evento, Alarma alarma) {
-        evento.borrarAlarma(alarma.getFechaHoraDisparo());
-        this.alarmas.remove(alarma);
-    }
-
-    public void eliminar(Evento evento) {
-        var lista = this.eventos.get(evento.getInicio().toLocalDate());
-        if (lista == null)
-            return;
-
-        lista.remove(evento);
-        this.alarmas.removeAll(evento.getAlarmas());
-    }
-
-    // Items
-    public ArrayList<Tarea> getTareas(LocalDateTime desde, LocalDateTime hasta) {
-        var lista = new ArrayList<Tarea>();
+    public ArrayList<Item> getItems(LocalDateTime desde, LocalDateTime hasta) {
+        var lista = new ArrayList<Item>();
         var fecha = desde.toLocalDate();
         while (fecha.isBefore(hasta.toLocalDate())) {
-            var tareas = this.tareas.get(fecha);
+            var tareas = this.items.get(fecha);
             if (tareas != null)
                 lista.addAll(tareas);
 
@@ -111,26 +75,4 @@ public class Calendario {
 
         return lista;
     }
-
-    public ArrayList<Evento> getEventos(LocalDateTime desde, LocalDateTime hasta) {
-        var lista = new ArrayList<Evento>();
-        var fecha = desde.toLocalDate();
-        while (fecha.isBefore(hasta.toLocalDate())) {
-            var eventos = this.eventos.get(fecha);
-            if (eventos != null)
-                lista.addAll(eventos);
-
-            fecha = fecha.plusDays(1);
-        }
-
-        return lista;
-    }
-
-    /*Todo: poder modificar un item y sus alarmas
-    * public void cambiarAlarma(item, nuevaAlarma) {
-    *     busca la alarma en el item con el mismo disparo que la nueva
-    *     la reemplaza por la nueva alarma
-    *     la inserta en el heap de alarmas
-    * }
-    * */
 }

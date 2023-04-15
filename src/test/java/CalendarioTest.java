@@ -11,27 +11,31 @@ public class CalendarioTest {
         var momento1 = momento0.plusWeeks(1);
         var momento2 = momento1.plusYears(10);
 
-        var calendario = new Calendario();
-        var tarea0 = calendario.crear("Tarea 0", "Descripcion 0", momento0, false);
-        var tarea1 = calendario.crear("Tarea 1", "Descripcion 1", momento1, false);
-        var tarea2 = calendario.crear("Tarea 2", "Descripcion 2", momento2, false);
-        var evento0 = calendario.crear("Evento 0", "Descripcion 0", momento0, momento0);
-        var evento1 = calendario.crear("Evento 1", "Descripcion 1", momento1, momento1);
-        var evento2 = calendario.crear("Evento 2", "Descripcion 2", momento2, momento2);
+        var calendario = new Calendario("mail");
+        var tarea0 = new Tarea("Tarea 0", "Descripcion 0", momento0);
+        var tarea1 = new Tarea("Tarea 1", "Descripcion 1", momento1);
+        var tarea2 = new Tarea("Tarea 2", "Descripcion 2", momento2);
+        var evento0 = new Evento("Evento 0", "Descripcion 0", momento0, momento0);
+        var evento1 = new Evento("Evento 1", "Descripcion 1", momento1, momento1);
+        var evento2 = new Evento("Evento 2", "Descripcion 2", momento2, momento2);
+        calendario.agregar(tarea0);
+        calendario.agregar(tarea1);
+        calendario.agregar(tarea2);
+        calendario.agregar(evento0);
+        calendario.agregar(evento1);
+        calendario.agregar(evento2);
 
-        var tareas1 = calendario.getTareas(momento0, momento1);
-        var eventos1 = calendario.getEventos(momento0, momento1);
-        assertEquals(1, tareas1.size());
-        assertEquals(1, eventos1.size());
-        assertTrue(tareas1.contains(tarea0));
-        assertTrue(eventos1.contains(evento0));
+        var items = calendario.getItems(momento0, momento1);
+        assertEquals(2, items.size());
+        assertTrue(items.contains(tarea0));
+        assertTrue(items.contains(evento0));
 
-        var tareas2 = calendario.getTareas(momento0, momento2);
-        var eventos2 = calendario.getEventos(momento0, momento2);
-        assertEquals(2, tareas2.size());
-        assertEquals(2, eventos2.size());
-        assertTrue(tareas2.contains(tarea0));
-        assertTrue(tareas2.contains(tarea1));
+        items = calendario.getItems(momento0, momento2);
+        assertEquals(4, items.size());
+        assertTrue(items.contains(tarea0));
+        assertTrue(items.contains(tarea1));
+        assertTrue(items.contains(evento0));
+        assertTrue(items.contains(evento1));
     }
 
     @Test
@@ -40,35 +44,42 @@ public class CalendarioTest {
         var momento1 = momento0.plusWeeks(1);
         var momento2 = momento1.plusYears(10);
 
-        var calendario = new Calendario();
-        var tarea0 = calendario.crear("Tarea 0", "Descripcion 0", momento0, false);
-        var tarea1 = calendario.crear("Tarea 1", "Descripcion 1", momento1, false);
-        var tarea2 = calendario.crear("Tarea 2", "Descripcion 2", momento2, false);
-        var evento0 = calendario.crear("Evento 0", "Descripcion 0", momento0, momento0);
-        var evento1 = calendario.crear("Evento 1", "Descripcion 1", momento1, momento1);
-        var evento2 = calendario.crear("Evento 2", "Descripcion 2", momento2, momento2);
+        var calendario = new Calendario("mail");
+        var tarea0 = new Tarea("Tarea 0", "Descripcion 0", momento0);
+        var tarea1 = new Tarea("Tarea 1", "Descripcion 1", momento1);
+        var tarea2 = new Tarea("Tarea 2", "Descripcion 2", momento2);
+        var evento0 = new Evento("Evento 0", "Descripcion 0", momento0, momento0);
+        var evento1 = new Evento("Evento 1", "Descripcion 1", momento1, momento1);
+        var evento2 = new Evento("Evento 2", "Descripcion 2", momento2, momento2);
+        calendario.agregar(tarea0);
+        calendario.agregar(tarea1);
+        calendario.agregar(tarea2);
+        calendario.agregar(evento0);
+        calendario.agregar(evento1);
+        calendario.agregar(evento2);
 
-        assertTrue(calendario.getTareas(momento0, momento2).contains(tarea1));
-        assertTrue(calendario.getEventos(momento0, momento2).contains(evento1));
+        assertTrue(calendario.getItems(momento0, momento2).contains(tarea1));
 
         calendario.eliminar(tarea1);
         calendario.eliminar(evento1);
-        var tareas = calendario.getTareas(momento0, momento2);
-        var eventos = calendario.getEventos(momento0, momento2);
-        assertEquals(1, tareas.size());
-        assertEquals(1, eventos.size());
-        assertFalse(tareas.contains(tarea1));
-        assertFalse(eventos.contains(evento1));
+
+        var items = calendario.getItems(momento0, momento2);
+        assertEquals(2, items.size());
+        assertFalse(items.contains(tarea1));
+        assertFalse(items.contains(evento1));
     }
 
     @Test
     public void testAgregarBorrarAlarmas() {
         var momento = LocalDateTime.of(2020, 1, 1, 0, 0);
-        var calendario = new Calendario();
+        var calendario = new Calendario("mail");
 
-        var tarea0 = calendario.crear("Tarea 0", "Descripcion 0", momento, false);
-        var tarea1 = calendario.crear("Tarea 2", "Descripcion 2", momento, false);
-        var evento = calendario.crear("Evento 0", "Descripcion 0", momento, momento);
+        var tarea0 = new Tarea("Tarea 0", "Descripcion 0", momento);
+        var tarea1 = new Tarea("Tarea 2", "Descripcion 2", momento);
+        var evento = new Evento("Evento 0", "Descripcion 0", momento, momento);
+        calendario.agregar(tarea0);
+        calendario.agregar(tarea1);
+        calendario.agregar(evento);
 
         var alarmaTarea0 = new Alarma(momento);
         var alarmaTarea1 = new Alarma(momento.plusMonths(1));

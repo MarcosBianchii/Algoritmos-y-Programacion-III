@@ -5,7 +5,7 @@ import java.util.HashMap;
 // LocalDate -> Fecha
 // LacalDateTime -> Fecha y hora
 
-public class Tarea {
+public class Tarea implements Item {
     private String titulo;
     private String descripcion;
     private boolean todoElDia;
@@ -14,6 +14,10 @@ public class Tarea {
     private boolean completada = false;
     private final HashMap<LocalDateTime,Alarma> alarmas = new HashMap<>();
 
+    public Tarea(String titulo, String descripcion, LocalDateTime fechaDeVencimiento) {
+        this(titulo, descripcion, fechaDeVencimiento, false);
+    }
+
     public Tarea(String titulo, String descripcion, LocalDateTime fechaDeVencimiento, boolean todoElDia) {
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -21,36 +25,8 @@ public class Tarea {
         this.todoElDia = todoElDia;
     }
 
-    public String getTitulo() {
-        return this.titulo;
-    }
-
-    public String getDescripcion() {
-        return this.descripcion;
-    }
-
-    public boolean getEsTodoElDia() {
-        return this.todoElDia;
-    }
-
-    public boolean getCompletada() {
-        return this.completada;
-    }
-
-    public LocalDateTime getFechaDeVencimiento() {
+    public LocalDateTime getIdTiempo() {
         return this.fechaDeVencimiento;
-    }
-
-    public void setTitulo(String nuevoTitulo) {
-        this.titulo = nuevoTitulo;
-    }
-
-    public void setDescripcion(String nuevaDescripcion) {
-        this.descripcion = nuevaDescripcion;
-    }
-
-    public void setFechaDeVencimiento(LocalDateTime nuevaFechaDeVencimiento) {
-        this.fechaDeVencimiento = nuevaFechaDeVencimiento;
     }
 
     public boolean toggleCompletacion() {
@@ -67,12 +43,11 @@ public class Tarea {
         this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
     }
 
-    public void borrarAlarma(LocalDateTime fechaHoraDisparo) {
-        this.alarmas.remove(fechaHoraDisparo);
+    public void borrarAlarma(Alarma alarma) {
+        this.alarmas.remove(alarma.getFechaHoraDisparo());
     }
 
-    public void setAlarmas(ArrayList<Alarma> nuevasAlarmas) {
-        this.alarmas.clear();
+    public void agregarAlarmas(ArrayList<Alarma> nuevasAlarmas) {
         for (Alarma alarma : nuevasAlarmas) {
             this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
         }
