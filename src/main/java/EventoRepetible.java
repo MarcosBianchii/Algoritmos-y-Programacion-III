@@ -27,6 +27,12 @@ public class EventoRepetible extends Evento {
         this.alarmas.putAll(evento.alarmas);
     }
 
+    public Evento toEvento() {
+        var evento = new Evento(titulo, descripcion, inicio, fin);
+        evento.agregarAlarmas(this.getAlarmas());
+        return evento;
+    }
+
     public Repeticion getRepeticion() {
         return this.repeticion;
     }

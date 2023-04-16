@@ -7,5 +7,4 @@ public interface Item {
     void agregarAlarmas(ArrayList<Alarma> alarmas);
     void borrarAlarma(Alarma alarma);
     ArrayList<Alarma> getAlarmas();
-
 }

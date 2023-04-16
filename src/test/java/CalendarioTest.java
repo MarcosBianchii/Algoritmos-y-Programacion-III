@@ -2,7 +2,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.List;
 
 public class CalendarioTest {
     @Test
@@ -94,5 +94,34 @@ public class CalendarioTest {
         assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarmaTarea1.getFechaHoraDisparo()));
         calendario.borrarAlarma(tarea1, alarmaTarea1);
         assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarmaEvento.getFechaHoraDisparo()));
+    }
+
+    @Test
+    public void agregarAlarmas() {
+        var momento = LocalDateTime.of(2020, 1, 1, 0, 0);
+        var calendario = new Calendario("mail");
+
+        var tarea = new Tarea("Tarea 0", "Descripcion 0", momento);
+        var evento = new Evento("Evento 0", "Descripcion 0", momento, momento);
+        calendario.agregar(tarea);
+        calendario.agregar(evento);
+
+        var alarma0 = new Alarma(momento);
+        var alarma1 = new Alarma(momento.plusMonths(1));
+        var alarma2 = new Alarma(momento.plusMonths(2));
+        var alarma3 = new Alarma(momento.plusMonths(3));
+
+        var lista0 = new ArrayList<>(List.of(new Alarma[]{alarma0, alarma1}));
+        var lista1 = new ArrayList<>(List.of(new Alarma[]{alarma2, alarma3}));
+        calendario.agregarAlarmas(tarea, lista0);
+        calendario.agregarAlarmas(evento, lista1);
+
+        assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarma0.getFechaHoraDisparo()));
+        calendario.dispararAlarma();
+        assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarma1.getFechaHoraDisparo()));
+        calendario.dispararAlarma();
+        assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarma2.getFechaHoraDisparo()));
+        calendario.dispararAlarma();
+        assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarma3.getFechaHoraDisparo()));
     }
 }

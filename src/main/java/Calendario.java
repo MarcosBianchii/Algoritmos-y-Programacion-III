@@ -28,11 +28,7 @@ public class Calendario {
     }
 
     public void agregar(Item item) {
-        var lista = this.items.get(item.getIdTiempo().toLocalDate());
-        if (lista == null) {
-            lista = new ArrayList<>();
-            this.items.put(item.getIdTiempo().toLocalDate(), lista);
-        }
+        var lista = this.items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
 
         lista.add(item);
         this.alarmas.addAll(item.getAlarmas());
