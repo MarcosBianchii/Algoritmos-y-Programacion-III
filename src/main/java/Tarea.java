@@ -29,6 +29,18 @@ public class Tarea implements Item {
         return this.fechaDeVencimiento;
     }
 
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public void setFechaDeVencimiento(LocalDateTime fechaDeVencimiento) {
+        this.fechaDeVencimiento = fechaDeVencimiento;
+    }
+
     public boolean toggleCompletacion() {
         this.completada = !this.completada;
         return this.completada;
@@ -39,12 +51,12 @@ public class Tarea implements Item {
         return this.todoElDia;
     }
 
-    public void agregarAlarma(Alarma alarma) {
-        this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
+    public ArrayList<Alarma> getAlarmas() {
+        return new ArrayList<>(this.alarmas.values());
     }
 
-    public void borrarAlarma(Alarma alarma) {
-        this.alarmas.remove(alarma.getFechaHoraDisparo());
+    public void agregarAlarma(Alarma alarma) {
+        this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
     }
 
     public void agregarAlarmas(ArrayList<Alarma> nuevasAlarmas) {
@@ -53,7 +65,7 @@ public class Tarea implements Item {
         }
     }
 
-    public ArrayList<Alarma> getAlarmas() {
-        return new ArrayList<>(this.alarmas.values());
+    public void borrarAlarma(Alarma alarma) {
+        this.alarmas.remove(alarma.getFechaHoraDisparo());
     }
 }

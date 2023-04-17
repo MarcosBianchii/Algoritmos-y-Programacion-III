@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CalendarioTest {
     @Test
-    public void testConseguirItemsDesdeHasta() {
+    public void testConseguirItemsDesdeHastaNoRepetibles() {
         var momento0 = LocalDateTime.of(2020, 1, 1, 0, 0);
         var momento1 = momento0.plusWeeks(1);
         var momento2 = momento1.plusYears(10);
@@ -36,6 +36,46 @@ public class CalendarioTest {
         assertTrue(items.contains(tarea1));
         assertTrue(items.contains(evento0));
         assertTrue(items.contains(evento1));
+    }
+
+    @Test
+    public void testConseguirItemsDesdeHastaRepetibles() {
+        var momento = LocalDateTime.of(2020, 1, 1, 0, 0);
+        var calendario = new Calendario("mail");
+
+        var evento0 = new EventoRepetible("Evento 1", "Descripcion 1", momento, momento);
+        evento0.setRepeticionDiaria(3, 10);
+
+        var evento1 = new EventoRepetible("Evento 2", "Descripcion 2", momento, momento.plusDays(1));
+        evento1.setRepeticionSemanal(new ArrayList<>(List.of(new Boolean[]{true, true, false, false, false, false, false})), 10);
+
+        var evento2 = new EventoRepetible("Evento 3", "Descripcion 3", momento, momento.plusDays(2));
+        evento2.setRepeticion(Repeticion.MENSUAL, 10);
+
+        var evento3 = new EventoRepetible("Evento 4", "Descripcion 4", momento, momento.plusDays(3));
+        evento3.setRepeticion(Repeticion.ANUAL, 10);
+
+        calendario.agregar(evento0);
+        calendario.agregar(evento1);
+        calendario.agregar(evento2);
+        calendario.agregar(evento3);
+
+        var items = calendario.getItems(momento, momento.plusWeeks(1));
+        assertEquals(4, items.size());
+
+        items = calendario.getItems(momento.plusDays(1), momento.plusWeeks(2));
+        assertEquals(2, items.size());
+
+        items = calendario.getItems(momento, momento.plusYears(1).plusDays(1));
+        assertEquals(4, items.size());
+
+        calendario.toEvento(evento0);
+        calendario.toEvento(evento1);
+        calendario.toEvento(evento2);
+        calendario.toEvento(evento3);
+
+        items = calendario.getItems(momento.plusDays(1), momento.plusYears(10));
+        assertEquals(0, items.size());
     }
 
     @Test
@@ -123,5 +163,22 @@ public class CalendarioTest {
         assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarma2.getFechaHoraDisparo()));
         calendario.dispararAlarma();
         assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarma3.getFechaHoraDisparo()));
+    }
+
+    @Test
+    public void testToRepetible() {
+        var momento = LocalDateTime.of(2020, 1, 1, 0, 0);
+        var evento = new Evento("Evento 0", "Descripcion 0", momento, momento);
+        var calendario = new Calendario("mail");
+
+        calendario.agregar(evento);
+        calendario.agregarAlarmas(evento, new ArrayList<>(List.of(new Alarma[]{new Alarma(momento), new Alarma(momento.plusMonths(1))})));
+
+        var repetible = calendario.toRepetible(evento);
+        repetible.setRepeticion(Repeticion.MENSUAL, -1);
+
+        var items = calendario.getItems(momento.plusDays(1), momento.plusDays(2));
+        assertEquals(0, items.size());
+        assertEquals(2, repetible.getAlarmas().size());
     }
 }

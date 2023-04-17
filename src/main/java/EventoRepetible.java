@@ -1,10 +1,8 @@
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 enum Repeticion {
-    NOTIENE,
     DIARIA,
     SEMANAL,
     MENSUAL,
@@ -12,30 +10,24 @@ enum Repeticion {
 }
 
 public class EventoRepetible extends Evento {
-
-    private Repeticion repeticion = Repeticion.NOTIENE;
-    private final ArrayList<Boolean> dias = new ArrayList<>(Arrays.asList(false, false, false, false, false, false, false));
+    private Repeticion repeticion;
+    private final ArrayList<Boolean> dias = new ArrayList<>(); // MON, TUE, WED, THU, FRI, SAT, SUN
     private int cantidadRepeticiones = 0;
     private int frecuenciaDiaria = 0;
+    private boolean esInfinito = false;
 
     public EventoRepetible(String titulo, String descripcion, LocalDateTime inicio, LocalDateTime fin) {
         super(titulo, descripcion, inicio, fin);
     }
 
-    public EventoRepetible(Evento evento) {
+    protected EventoRepetible(Evento evento) {
         super(evento.titulo, evento.descripcion, evento.inicio, evento.fin);
-        this.alarmas.putAll(evento.alarmas);
-    }
-
-    public Evento toEvento() {
-        var evento = new Evento(titulo, descripcion, inicio, fin);
-        evento.agregarAlarmas(this.getAlarmas());
-        return evento;
     }
 
     public Repeticion getRepeticion() {
         return this.repeticion;
     }
+
     public int getCantidadRepeticiones() {
         return this.cantidadRepeticiones;
     }
@@ -45,6 +37,7 @@ public class EventoRepetible extends Evento {
     }
 
     public void setRepeticion(Repeticion repeticion, int cantidad) {
+        if (cantidad == -1) this.esInfinito = true;
         this.cantidadRepeticiones = cantidad;
         this.repeticion = repeticion;
     }
@@ -62,6 +55,7 @@ public class EventoRepetible extends Evento {
 
     // Si se repite todos los dias, el intervalo tiene que ser = 1
     public void setRepeticionDiaria(int intevalo, int cantidad) {
+        if (cantidad == -1) this.esInfinito = true;
         this.repeticion = Repeticion.DIARIA;
         this.cantidadRepeticiones = cantidad;
         this.frecuenciaDiaria = intevalo;
@@ -75,6 +69,7 @@ public class EventoRepetible extends Evento {
     }
 
     public void setRepeticionSemanal(ArrayList<Boolean> dias, int cantidad) {
+        if (cantidad == -1) this.esInfinito = true;
         this.dias.clear();
         this.dias.addAll(dias);
         this.cantidadRepeticiones = cantidad;
@@ -89,5 +84,26 @@ public class EventoRepetible extends Evento {
 
         this.cantidadRepeticiones = Math.toIntExact(cantidad);
         this.repeticion = Repeticion.SEMANAL;
+    }
+
+    public boolean caeEntre(LocalDate desde, LocalDate hasta) {
+        LocalDate fecha = this.inicio.toLocalDate();
+
+        for (int i = 0; i < this.cantidadRepeticiones || this.esInfinito; i++) {
+            if (fecha.isAfter(desde.minusDays(1)) && fecha.isBefore(hasta))
+                return true;
+
+            if (fecha.isAfter(hasta))
+                return false;
+
+            switch (this.repeticion) {
+                case DIARIA  -> fecha = fecha.plusDays(this.frecuenciaDiaria);
+                case SEMANAL -> fecha = fecha.plusWeeks(1);
+                case MENSUAL -> fecha = fecha.plusMonths(1);
+                case ANUAL   -> fecha = fecha.plusYears(1);
+            }
+        }
+
+        return false;
     }
 }
