@@ -73,12 +73,12 @@ public class EventoTest {
         assertTrue(dias.containsAll(evento.getDias()));
 
         // Repeticion mensual
-        evento.setRepeticion(Repeticion.MENSUAL, evento.getIdTiempo().plusYears(1));
+        evento.setRepeticionMensual(evento.getIdTiempo().plusYears(1));
         assertEquals(Repeticion.MENSUAL, evento.getRepeticion());
         assertEquals(12, evento.getCantidadRepeticiones());
 
         // Repeticion anual
-        evento.setRepeticion(Repeticion.ANUAL, evento.getIdTiempo().plusYears(5));
+        evento.setRepeticionAnual(evento.getIdTiempo().plusYears(5));
         assertEquals(Repeticion.ANUAL, evento.getRepeticion());
         assertEquals(5, evento.getCantidadRepeticiones());
     }

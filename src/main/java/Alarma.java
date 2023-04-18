@@ -5,6 +5,8 @@ import java.time.*;
 
 public class Alarma {
     private LocalDateTime fechaHoraDisparo;
+    private final LocalDateTime fechaHoraOriginal;
+    private EventoRepetible duenioRepetible = null;
     private boolean mandaMail = false;
     private boolean suena = false;
     private boolean muestraNotificacion = false;
@@ -12,6 +14,11 @@ public class Alarma {
 
     public Alarma(LocalDateTime fechaHoraDisparo) { // Sonido sonido
         this.fechaHoraDisparo = fechaHoraDisparo;
+        this.fechaHoraOriginal = fechaHoraDisparo;
+    }
+
+    public void marcarComoRepetible(EventoRepetible duenioRepetible) {
+        this.duenioRepetible = duenioRepetible;
     }
 
     public void setConfig(boolean mandaMail, boolean suena, boolean muestraNotificacion) {
@@ -22,6 +29,10 @@ public class Alarma {
 
     public LocalDateTime getFechaHoraDisparo() {
         return this.fechaHoraDisparo;
+    }
+
+    public LocalDateTime getFechaHoraOriginal() {
+        return this.fechaHoraOriginal;
     }
 
     public void setFechaHoraDisparo(LocalDateTime fechaHoraDisparo) {
@@ -40,5 +51,13 @@ public class Alarma {
         if (this.muestraNotificacion) {
             System.out.println("Mostrando notificacion");
         }
+
+        if (this.duenioRepetible != null) {
+            this.setFechaHoraDisparo(this.duenioRepetible.computarProximaFecha(this));
+            if (this.getFechaHoraDisparo() == null)
+                this.duenioRepetible.borrarAlarma(this);
+        }
+
+        else this.setFechaHoraDisparo(null);
     }
 }

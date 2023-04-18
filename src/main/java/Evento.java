@@ -55,7 +55,7 @@ public class Evento implements Item {
     }
 
     public void agregarAlarmas(ArrayList<Alarma> alarmas) {
-        for (Alarma alarma : alarmas)
+        for (var alarma : alarmas)
             this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
     }
 

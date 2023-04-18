@@ -26,6 +26,7 @@ public class CalendarioTest {
         calendario.agregar(evento2);
 
         var items = calendario.getItems(momento0, momento1);
+
         assertEquals(2, items.size());
         assertTrue(items.contains(tarea0));
         assertTrue(items.contains(evento0));
@@ -50,10 +51,10 @@ public class CalendarioTest {
         evento1.setRepeticionSemanal(new ArrayList<>(List.of(new Boolean[]{true, true, false, false, false, false, false})), 10);
 
         var evento2 = new EventoRepetible("Evento 3", "Descripcion 3", momento, momento.plusDays(2));
-        evento2.setRepeticion(Repeticion.MENSUAL, 10);
+        evento2.setRepeticionMensual(10);
 
         var evento3 = new EventoRepetible("Evento 4", "Descripcion 4", momento, momento.plusDays(3));
-        evento3.setRepeticion(Repeticion.ANUAL, 10);
+        evento3.setRepeticionAnual(10);
 
         calendario.agregar(evento0);
         calendario.agregar(evento1);
@@ -104,6 +105,7 @@ public class CalendarioTest {
         calendario.eliminar(evento1);
 
         var items = calendario.getItems(momento0, momento2);
+
         assertEquals(2, items.size());
         assertFalse(items.contains(tarea1));
         assertFalse(items.contains(evento1));
@@ -175,10 +177,38 @@ public class CalendarioTest {
         calendario.agregarAlarmas(evento, new ArrayList<>(List.of(new Alarma[]{new Alarma(momento), new Alarma(momento.plusMonths(1))})));
 
         var repetible = calendario.toRepetible(evento);
-        repetible.setRepeticion(Repeticion.MENSUAL, -1);
+        repetible.setRepeticionMensual(-1);
 
         var items = calendario.getItems(momento.plusDays(1), momento.plusDays(2));
         assertEquals(0, items.size());
         assertEquals(2, repetible.getAlarmas().size());
+    }
+
+    @Test
+    public void testAlarmasRepetibles() {
+        var momento = LocalDateTime.now();
+        var repetible = new EventoRepetible("Evento 0", "Descripcion 0", momento, momento);
+        var calendario = new Calendario("mail");
+        var alarma = new Alarma(momento);
+        var dias = new ArrayList<>(List.of(new Boolean[]{true, false, true, false, false, false, false}));
+
+        repetible.setRepeticionSemanal(dias, 2);
+        calendario.agregar(repetible);
+        calendario.agregarAlarma(repetible, alarma);
+
+        calendario.dispararAlarma();
+        assertEquals(momento.plusDays(2), alarma.getFechaHoraDisparo());
+        calendario.dispararAlarma();
+        assertEquals(momento.plusDays(7), alarma.getFechaHoraDisparo());
+        calendario.dispararAlarma();
+        assertEquals(momento.plusDays(9), alarma.getFechaHoraDisparo());
+        calendario.dispararAlarma();
+        assertEquals(momento.plusDays(14), alarma.getFechaHoraDisparo());
+        calendario.dispararAlarma();
+        assertEquals(momento.plusDays(16), alarma.getFechaHoraDisparo());
+        calendario.dispararAlarma();
+        assertEquals(momento.plusDays(21), alarma.getFechaHoraDisparo());
+        calendario.dispararAlarma();
+        assertNull(alarma.getFechaHoraDisparo());
     }
 }

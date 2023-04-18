@@ -2,13 +2,6 @@ import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
-enum Repeticion {
-    DIARIA,
-    SEMANAL,
-    MENSUAL,
-    ANUAL,
-}
-
 public class EventoRepetible extends Evento {
     private Repeticion repeticion;
     private final ArrayList<Boolean> dias = new ArrayList<>(); // MON, TUE, WED, THU, FRI, SAT, SUN
@@ -36,13 +29,26 @@ public class EventoRepetible extends Evento {
         return this.dias;
     }
 
-    public void setRepeticion(Repeticion repeticion, int cantidad) {
+    @Override
+    public void agregarAlarma(Alarma alarma) {
+        super.agregarAlarma(alarma);
+        alarma.marcarComoRepetible(this);
+    }
+
+    @Override
+    public void agregarAlarmas(ArrayList<Alarma> alarmas) {
+        super.agregarAlarmas(alarmas);
+        for (var alarma : alarmas)
+            alarma.marcarComoRepetible(this);
+    }
+
+    private void setRepeticion(Repeticion repeticion, int cantidad) {
         if (cantidad == -1) this.esInfinito = true;
         this.cantidadRepeticiones = cantidad;
         this.repeticion = repeticion;
     }
 
-    public void setRepeticion(Repeticion repeticion, LocalDateTime hasta) {
+    private void setRepeticion(Repeticion repeticion, LocalDateTime hasta) {
         long cantidad = 0;
         switch (repeticion) {
             case MENSUAL -> cantidad = this.inicio.until(hasta, ChronoUnit.MONTHS);
@@ -86,6 +92,22 @@ public class EventoRepetible extends Evento {
         this.repeticion = Repeticion.SEMANAL;
     }
 
+    public void setRepeticionMensual(int cantidad) {
+        setRepeticion(Repeticion.MENSUAL, cantidad);
+    }
+
+    public void setRepeticionMensual(LocalDateTime hasta) {
+        setRepeticion(Repeticion.MENSUAL, hasta);
+    }
+
+    public void setRepeticionAnual(int cantidad) {
+        setRepeticion(Repeticion.ANUAL, cantidad);
+    }
+
+    public void setRepeticionAnual(LocalDateTime hasta) {
+        setRepeticion(Repeticion.ANUAL, hasta);
+    }
+
     public boolean caeEntre(LocalDate desde, LocalDate hasta) {
         LocalDate fecha = this.inicio.toLocalDate();
 
@@ -94,7 +116,7 @@ public class EventoRepetible extends Evento {
                 return true;
 
             if (fecha.isAfter(hasta))
-                return false;
+                break;
 
             switch (this.repeticion) {
                 case DIARIA  -> fecha = fecha.plusDays(this.frecuenciaDiaria);
@@ -105,5 +127,64 @@ public class EventoRepetible extends Evento {
         }
 
         return false;
+    }
+
+    private LocalDateTime calcularSiguienteFechaSemenal(LocalDateTime dia) {
+        int inicial = dia.getDayOfWeek().getValue();
+        for (int i = 0; i < this.dias.size(); i++) {
+            int indice = (inicial + i) % this.dias.size();
+            if (this.dias.get(indice)) {
+                dia = dia.plusDays(i + 1);
+                break;
+            }
+        }
+
+        return dia;
+    }
+
+    private LocalDateTime calcularFechaFinalSemanal(LocalDateTime dia) {
+        int i = this.dias.size() - 1;
+        for (; i >= 0; i--)
+            if (this.dias.get(i))
+                break;
+
+        var fecha = dia.plusWeeks(this.cantidadRepeticiones + 1);
+        return fecha.plusDays(i - dia.getDayOfWeek().getValue());
+    }
+
+    public LocalDateTime computarProximaFecha(Alarma alarma) {
+        LocalDateTime fecha = alarma.getFechaHoraDisparo();
+        LocalDateTime fechaFinal = alarma.getFechaHoraOriginal();
+
+        switch (this.repeticion) {
+            case DIARIA -> {
+                fecha = fecha.plusDays(this.frecuenciaDiaria);
+                if (this.esInfinito) return fecha;
+                fechaFinal = fechaFinal.plusDays((long) this.frecuenciaDiaria * this.cantidadRepeticiones);
+            }
+
+            case SEMANAL -> {
+                fecha = calcularSiguienteFechaSemenal(fecha);
+                if (this.esInfinito) return fecha;
+                fechaFinal = calcularFechaFinalSemanal(fechaFinal);
+            }
+
+            case MENSUAL -> {
+                fecha = fecha.plusMonths(1);
+                if (this.esInfinito) return fecha;
+                fechaFinal = fechaFinal.plusMonths(this.cantidadRepeticiones);
+            }
+
+            case ANUAL -> {
+                fecha = fecha.plusYears(1);
+                if (this.esInfinito) return fecha;
+                fechaFinal = fechaFinal.plusYears(this.cantidadRepeticiones);
+            }
+        }
+
+        if (fecha.isAfter(fechaFinal))
+            return null;
+
+        return fecha;
     }
 }

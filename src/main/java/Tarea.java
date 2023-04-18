@@ -60,9 +60,8 @@ public class Tarea implements Item {
     }
 
     public void agregarAlarmas(ArrayList<Alarma> nuevasAlarmas) {
-        for (Alarma alarma : nuevasAlarmas) {
+        for (var alarma : nuevasAlarmas)
             this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
-        }
     }
 
     public void borrarAlarma(Alarma alarma) {
