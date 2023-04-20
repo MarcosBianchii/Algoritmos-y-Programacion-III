@@ -1,18 +1,9 @@
-import java.time.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.LocalDateTime;
 
-// LocalDate -> Fecha
-// LacalDateTime -> Fecha y hora
-
-public class Tarea implements Item {
-    private String titulo;
-    private String descripcion;
+public class Tarea extends Item {
     private boolean todoElDia;
     private LocalDateTime fechaDeVencimiento;
-
     private boolean completada = false;
-    private final HashMap<LocalDateTime,Alarma> alarmas = new HashMap<>();
 
     public Tarea(String titulo, String descripcion, LocalDateTime fechaDeVencimiento) {
         this(titulo, descripcion, fechaDeVencimiento, false);
@@ -25,16 +16,9 @@ public class Tarea implements Item {
         this.todoElDia = todoElDia;
     }
 
+    @Override
     public LocalDateTime getIdTiempo() {
         return this.fechaDeVencimiento;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 
     public void setFechaDeVencimiento(LocalDateTime fechaDeVencimiento) {
@@ -49,22 +33,5 @@ public class Tarea implements Item {
     public boolean toggleTodoElDia() {
         this.todoElDia = !this.todoElDia;
         return this.todoElDia;
-    }
-
-    public ArrayList<Alarma> getAlarmas() {
-        return new ArrayList<>(this.alarmas.values());
-    }
-
-    public void agregarAlarma(Alarma alarma) {
-        this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
-    }
-
-    public void agregarAlarmas(ArrayList<Alarma> nuevasAlarmas) {
-        for (var alarma : nuevasAlarmas)
-            this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
-    }
-
-    public void borrarAlarma(Alarma alarma) {
-        this.alarmas.remove(alarma.getFechaHoraDisparo());
     }
 }

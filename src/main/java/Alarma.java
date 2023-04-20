@@ -1,7 +1,4 @@
-import java.time.*;
-
-// LocalDate -> Fecha
-// LacalDateTime -> Fecha y hora
+import java.time.LocalDateTime;
 
 public class Alarma {
     private LocalDateTime fechaHoraDisparo;

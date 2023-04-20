@@ -61,7 +61,7 @@ public class Calendario {
         this.alarmas.add(alarma);
     }
 
-    public void agregarAlarmas(Item item, ArrayList<Alarma> alarmas) {
+    public void agregarAlarmas(Item item, List<Alarma> alarmas) {
         item.agregarAlarmas(alarmas);
         this.alarmas.addAll(alarmas);
     }
