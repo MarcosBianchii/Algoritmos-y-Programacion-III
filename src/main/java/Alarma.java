@@ -4,6 +4,7 @@ public class Alarma {
     private LocalDateTime fechaHoraDisparo;
     private final LocalDateTime fechaHoraOriginal;
     private EventoRepetible duenioRepetible = null;
+
     private boolean mandaMail = false;
     private boolean suena = false;
     private boolean muestraNotificacion = false;
@@ -12,16 +13,6 @@ public class Alarma {
     public Alarma(LocalDateTime fechaHoraDisparo) { // Sonido sonido
         this.fechaHoraDisparo = fechaHoraDisparo;
         this.fechaHoraOriginal = fechaHoraDisparo;
-    }
-
-    public void marcarComoRepetible(EventoRepetible duenioRepetible) {
-        this.duenioRepetible = duenioRepetible;
-    }
-
-    public void setConfig(boolean mandaMail, boolean suena, boolean muestraNotificacion) {
-        this.mandaMail = mandaMail;
-        this.suena = suena;
-        this.muestraNotificacion = muestraNotificacion;
     }
 
     public LocalDateTime getFechaHoraDisparo() {
@@ -34,6 +25,20 @@ public class Alarma {
 
     public void setFechaHoraDisparo(LocalDateTime fechaHoraDisparo) {
         this.fechaHoraDisparo = fechaHoraDisparo;
+    }
+
+    public void marcarComoRepetible(EventoRepetible duenioRepetible) {
+        this.duenioRepetible = duenioRepetible;
+    }
+
+    public void marcarComoNoRepetible(Evento evento) {
+        this.duenioRepetible = null;
+    }
+
+    public void setConfig(boolean mandaMail, boolean suena, boolean muestraNotificacion) {
+        this.mandaMail = mandaMail;
+        this.suena = suena;
+        this.muestraNotificacion = muestraNotificacion;
     }
 
     public void disparar(String mail) {
@@ -57,4 +62,5 @@ public class Alarma {
 
         else this.setFechaHoraDisparo(null);
     }
+
 }

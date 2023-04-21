@@ -119,17 +119,14 @@ public class CalendarioTest {
         var tarea0 = new Tarea("Tarea 0", "Descripcion 0", momento);
         var tarea1 = new Tarea("Tarea 2", "Descripcion 2", momento);
         var evento = new Evento("Evento 0", "Descripcion 0", momento, momento);
-        calendario.agregar(tarea0);
-        calendario.agregar(tarea1);
-        calendario.agregar(evento);
 
         var alarmaTarea0 = new Alarma(momento);
         var alarmaTarea1 = new Alarma(momento.plusMonths(1));
         var alarmaEvento = new Alarma(momento.plusMonths(2));
 
-        calendario.agregarAlarma(tarea0, alarmaTarea0);
-        calendario.agregarAlarma(tarea1, alarmaTarea1);
-        calendario.agregarAlarma(evento, alarmaEvento);
+        calendario.agregar(tarea0).agregarAlarma(tarea0, alarmaTarea0);
+        calendario.agregar(tarea1).agregarAlarma(tarea1, alarmaTarea1);
+        calendario.agregar(evento).agregarAlarma(evento, alarmaEvento);
 
         assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(momento));
         calendario.dispararAlarma();
@@ -145,8 +142,6 @@ public class CalendarioTest {
 
         var tarea = new Tarea("Tarea 0", "Descripcion 0", momento);
         var evento = new Evento("Evento 0", "Descripcion 0", momento, momento);
-        calendario.agregar(tarea);
-        calendario.agregar(evento);
 
         var alarma0 = new Alarma(momento);
         var alarma1 = new Alarma(momento.plusMonths(1));
@@ -155,8 +150,9 @@ public class CalendarioTest {
 
         var lista0 = new ArrayList<>(List.of(new Alarma[]{alarma0, alarma1}));
         var lista1 = new ArrayList<>(List.of(new Alarma[]{alarma2, alarma3}));
-        calendario.agregarAlarmas(tarea, lista0);
-        calendario.agregarAlarmas(evento, lista1);
+
+        calendario.agregar(tarea).agregarAlarmas(tarea, lista0);
+        calendario.agregar(evento).agregarAlarmas(evento, lista1);
 
         assertTrue(calendario.getProximaAlarma().getFechaHoraDisparo().isEqual(alarma0.getFechaHoraDisparo()));
         calendario.dispararAlarma();
@@ -170,11 +166,13 @@ public class CalendarioTest {
     @Test
     public void testToRepetible() {
         var momento = LocalDateTime.of(2020, 1, 1, 0, 0);
-        var evento = new Evento("Evento 0", "Descripcion 0", momento, momento);
         var calendario = new Calendario("mail");
+        var evento = new Evento("Evento 0", "Descripcion 0", momento, momento);
 
-        calendario.agregar(evento);
-        calendario.agregarAlarmas(evento, new ArrayList<>(List.of(new Alarma[]{new Alarma(momento), new Alarma(momento.plusMonths(1))})));
+        var alarma0 = new Alarma(momento);
+        var alarma1 = new Alarma(momento.plusMonths(1));
+
+        calendario.agregar(evento).agregarAlarmas(evento, new ArrayList<>(List.of(new Alarma[]{alarma0, alarma1})));
 
         var repetible = calendario.toRepetible(evento);
         repetible.setRepeticionMensual(-1);
@@ -186,15 +184,14 @@ public class CalendarioTest {
 
     @Test
     public void testAlarmasRepetibles() {
-        var momento = LocalDateTime.now();
+        var momento = LocalDateTime.of(2023, 4, 17, 0, 0);
         var repetible = new EventoRepetible("Evento 0", "Descripcion 0", momento, momento);
         var calendario = new Calendario("mail");
         var alarma = new Alarma(momento);
         var dias = new ArrayList<>(List.of(new Boolean[]{true, false, true, false, false, false, false}));
 
         repetible.setRepeticionSemanal(dias, 2);
-        calendario.agregar(repetible);
-        calendario.agregarAlarma(repetible, alarma);
+        calendario.agregar(repetible).agregarAlarma(repetible, alarma);
 
         calendario.dispararAlarma();
         assertEquals(momento.plusDays(2), alarma.getFechaHoraDisparo());

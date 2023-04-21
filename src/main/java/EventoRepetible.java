@@ -3,9 +3,10 @@ import java.time.*;
 import java.util.*;
 
 public class EventoRepetible extends Evento {
-    private Repeticion repeticion;
-    private final ArrayList<Boolean> dias = new ArrayList<>(); // MON, TUE, WED, THU, FRI, SAT, SUN
+    private CalculadorDeFechas calculador = null;
     private int cantidadRepeticiones = 0;
+
+    private final ArrayList<Boolean> dias = new ArrayList<>(); // MON, TUE, WED, THU, FRI, SAT, SUN
     private int frecuenciaDiaria = 0;
 
     public EventoRepetible(String titulo, String descripcion, LocalDateTime inicio, LocalDateTime fin) {
@@ -14,18 +15,6 @@ public class EventoRepetible extends Evento {
 
     public EventoRepetible(Evento evento) {
         super(evento.titulo, evento.descripcion, evento.inicio, evento.fin);
-    }
-
-    public Repeticion getRepeticion() {
-        return this.repeticion;
-    }
-
-    public int getCantidadRepeticiones() {
-        return this.cantidadRepeticiones;
-    }
-
-    public ArrayList<Boolean> getDias() {
-        return this.dias;
     }
 
     @Override
@@ -41,67 +30,67 @@ public class EventoRepetible extends Evento {
             alarma.marcarComoRepetible(this);
     }
 
-    private void setRepeticion(Repeticion repeticion, int cantidad) {
-        this.cantidadRepeticiones = cantidad;
-        this.repeticion = repeticion;
+    public int getCantidadRepeticiones() {
+        return this.cantidadRepeticiones;
     }
 
-    private void setRepeticion(Repeticion repeticion, LocalDateTime hasta) {
-        long cantidad = 0;
-        switch (repeticion) {
-            case MENSUAL -> cantidad = this.inicio.until(hasta, ChronoUnit.MONTHS);
-            case ANUAL   -> cantidad = this.inicio.until(hasta, ChronoUnit.YEARS);
-        }
+    public ArrayList<Boolean> getDias() {
+        return this.dias;
+    }
 
-        this.cantidadRepeticiones = Math.toIntExact(cantidad);
-        this.repeticion = repeticion;
+    public int getFrecuenciaDiaria() {
+        return this.frecuenciaDiaria;
     }
 
     // Si se repite todos los dias, el intervalo tiene que ser = 1
     public void setRepeticionDiaria(int intevalo, int cantidad) {
-        this.repeticion = Repeticion.DIARIA;
+        this.calculador = new CalculadorDiario();
         this.cantidadRepeticiones = cantidad;
         this.frecuenciaDiaria = intevalo;
     }
 
     public void setRepeticionDiaria(int intervalo, LocalDateTime hasta) {
-        this.repeticion = Repeticion.DIARIA;
-        this.frecuenciaDiaria = intervalo;
+        this.calculador = new CalculadorDiario();
         long cantidad = this.inicio.until(hasta, ChronoUnit.DAYS);
         this.cantidadRepeticiones = Math.toIntExact((long) Math.floor((double) Math.toIntExact(cantidad) / intervalo));
+        this.frecuenciaDiaria = intervalo;
     }
 
     public void setRepeticionSemanal(ArrayList<Boolean> dias, int cantidad) {
+        this.calculador = new CalculadorSemanal();
         this.dias.clear();
         this.dias.addAll(dias);
         this.cantidadRepeticiones = cantidad;
-        this.repeticion = Repeticion.SEMANAL;
     }
 
     public void setRepeticionSemanal(ArrayList<Boolean> dias, LocalDateTime hasta) {
+        this.calculador = new CalculadorSemanal();
         this.dias.clear();
         this.dias.addAll(dias);
-
         long cantidad = this.inicio.until(hasta, ChronoUnit.WEEKS);
-
         this.cantidadRepeticiones = Math.toIntExact(cantidad);
-        this.repeticion = Repeticion.SEMANAL;
     }
 
     public void setRepeticionMensual(int cantidad) {
-        setRepeticion(Repeticion.MENSUAL, cantidad);
+        this.calculador = new CalculadorMensual();
+        this.cantidadRepeticiones = cantidad;
     }
 
     public void setRepeticionMensual(LocalDateTime hasta) {
-        setRepeticion(Repeticion.MENSUAL, hasta);
+        this.calculador = new CalculadorMensual();
+        long cantidad = this.inicio.until(hasta, ChronoUnit.MONTHS);
+        this.cantidadRepeticiones = Math.toIntExact(cantidad);
     }
 
     public void setRepeticionAnual(int cantidad) {
-        setRepeticion(Repeticion.ANUAL, cantidad);
+        this.calculador = new CalculadorAnual();
+        this.cantidadRepeticiones = cantidad;
     }
 
     public void setRepeticionAnual(LocalDateTime hasta) {
-        setRepeticion(Repeticion.ANUAL, hasta);
+        this.calculador = new CalculadorAnual();
+        long cantidad = this.inicio.until(hasta, ChronoUnit.YEARS);
+        this.cantidadRepeticiones = Math.toIntExact(cantidad);
     }
 
     public boolean caeEntre(LocalDate desde, LocalDate hasta) {
@@ -114,73 +103,15 @@ public class EventoRepetible extends Evento {
             if (fecha.isAfter(hasta))
                 break;
 
-            switch (this.repeticion) {
-                case DIARIA  -> fecha = fecha.plusDays(this.frecuenciaDiaria);
-                case SEMANAL -> fecha = fecha.plusWeeks(1);
-                case MENSUAL -> fecha = fecha.plusMonths(1);
-                case ANUAL   -> fecha = fecha.plusYears(1);
-            }
+            fecha = this.calculador.sumarRepeticion(fecha, 1);
         }
 
         return false;
     }
 
-    private LocalDateTime calcularSiguienteFechaSemenal(LocalDateTime dia) {
-        int inicial = dia.getDayOfWeek().getValue();
-        for (int i = 0; i < this.dias.size(); i++) {
-            int indice = (inicial + i) % this.dias.size();
-            if (this.dias.get(indice)) {
-                dia = dia.plusDays(i + 1);
-                break;
-            }
-        }
-
-        return dia;
-    }
-
-    private LocalDateTime calcularFechaFinalSemanal(LocalDateTime dia) {
-        int i = this.dias.size() - 1;
-        for (; i >= 0; i--)
-            if (this.dias.get(i))
-                break;
-
-        var fecha = dia.plusWeeks(this.cantidadRepeticiones + 1);
-        return fecha.plusDays(i - dia.getDayOfWeek().getValue());
-    }
-
     public LocalDateTime computarProximaFecha(Alarma alarma) {
-        LocalDateTime fecha = alarma.getFechaHoraDisparo();
-        LocalDateTime fechaFinal = alarma.getFechaHoraOriginal();
-
-        switch (this.repeticion) {
-            case DIARIA -> {
-                fecha = fecha.plusDays(this.frecuenciaDiaria);
-                if (this.cantidadRepeticiones == -1) return fecha;
-                fechaFinal = fechaFinal.plusDays((long) this.frecuenciaDiaria * this.cantidadRepeticiones);
-            }
-
-            case SEMANAL -> {
-                fecha = calcularSiguienteFechaSemenal(fecha);
-                if (this.cantidadRepeticiones == -1) return fecha;
-                fechaFinal = calcularFechaFinalSemanal(fechaFinal);
-            }
-
-            case MENSUAL -> {
-                fecha = fecha.plusMonths(1);
-                if (this.cantidadRepeticiones == -1) return fecha;
-                fechaFinal = fechaFinal.plusMonths(this.cantidadRepeticiones);
-            }
-
-            case ANUAL -> {
-                fecha = fecha.plusYears(1);
-                if (this.cantidadRepeticiones == -1) return fecha;
-                fechaFinal = fechaFinal.plusYears(this.cantidadRepeticiones);
-            }
-        }
-
-        if (fecha.isAfter(fechaFinal))
-            return null;
-
-        return fecha;
+        LocalDateTime fecha = this.calculador.calcularFechaSiguiente(this, alarma);
+        LocalDateTime fechaLimite = this.calculador.calcularFechaLimite(this, alarma);
+        return fecha.isAfter(fechaLimite) ? null : fecha;
     }
 }

@@ -62,24 +62,20 @@ public class EventoTest {
             desde = desde.plusDays(intervalo);
         }
 
-        assertEquals(Repeticion.DIARIA, evento.getRepeticion());
         assertEquals(resultado, evento.getCantidadRepeticiones());
 
         // Repeticion semanal
         var dias = new ArrayList<>(Arrays.asList(true, false, false, false, true, false, false));
         evento.setRepeticionSemanal(dias, momento.plusWeeks(10));
-        assertEquals(Repeticion.SEMANAL, evento.getRepeticion());
         assertEquals(10, evento.getCantidadRepeticiones());
         assertTrue(dias.containsAll(evento.getDias()));
 
         // Repeticion mensual
         evento.setRepeticionMensual(evento.getIdTiempo().plusYears(1));
-        assertEquals(Repeticion.MENSUAL, evento.getRepeticion());
         assertEquals(12, evento.getCantidadRepeticiones());
 
         // Repeticion anual
         evento.setRepeticionAnual(evento.getIdTiempo().plusYears(5));
-        assertEquals(Repeticion.ANUAL, evento.getRepeticion());
         assertEquals(5, evento.getCantidadRepeticiones());
     }
 }

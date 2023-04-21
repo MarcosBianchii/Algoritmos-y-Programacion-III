@@ -32,16 +32,15 @@ public class Calendario {
         }
     }
 
-    public void agregar(Item item) {
+    public Calendario agregar(Item item) {
         var set = this.items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new HashSet<>());
-
         set.add(item);
-        this.alarmas.addAll(item.getAlarmas());
+        return this;
     }
 
-    public void agregar(EventoRepetible repetible) {
+    public Calendario agregar(EventoRepetible repetible) {
         this.repetibles.add(repetible);
-        this.alarmas.addAll(repetible.getAlarmas());
+        return this;
     }
 
     public void eliminar(Item item) {
@@ -75,7 +74,10 @@ public class Calendario {
         var evento = new Evento(repetible);
         this.eliminar(repetible);
         this.agregar(evento);
-        this.agregarAlarmas(evento, repetible.getAlarmas());
+        List<Alarma> alarmas = repetible.getAlarmas();
+        for (var alarma : alarmas)
+            alarma.marcarComoNoRepetible(evento);
+        this.agregarAlarmas(evento, alarmas);
         return evento;
     }
 
@@ -83,7 +85,10 @@ public class Calendario {
         var repetible = new EventoRepetible(evento);
         this.eliminar(evento);
         this.agregar(repetible);
-        this.agregarAlarmas(repetible, evento.getAlarmas());
+        List<Alarma> alarmas = evento.getAlarmas();
+        for (var alarma : alarmas)
+            alarma.marcarComoRepetible(repetible);
+        this.agregarAlarmas(repetible, alarmas);
         return repetible;
     }
 
