@@ -22,11 +22,14 @@ public abstract class Item {
 
     public void agregarAlarma(Alarma alarma) {
         this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
+        alarma.marcarComoNoRepetible();
     }
 
     public void agregarAlarmas(List<Alarma> alarmas) {
-        for (var alarma : alarmas)
+        for (var alarma : alarmas) {
+            alarma.marcarComoNoRepetible();
             this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
+        }
     }
 
     public void borrarAlarma(Alarma alarma) {

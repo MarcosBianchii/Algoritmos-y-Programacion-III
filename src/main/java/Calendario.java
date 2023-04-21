@@ -74,10 +74,7 @@ public class Calendario {
         var evento = new Evento(repetible);
         this.eliminar(repetible);
         this.agregar(evento);
-        List<Alarma> alarmas = repetible.getAlarmas();
-        for (var alarma : alarmas)
-            alarma.marcarComoNoRepetible(evento);
-        this.agregarAlarmas(evento, alarmas);
+        this.agregarAlarmas(evento, repetible.getAlarmas());
         return evento;
     }
 
@@ -85,10 +82,7 @@ public class Calendario {
         var repetible = new EventoRepetible(evento);
         this.eliminar(evento);
         this.agregar(repetible);
-        List<Alarma> alarmas = evento.getAlarmas();
-        for (var alarma : alarmas)
-            alarma.marcarComoRepetible(repetible);
-        this.agregarAlarmas(repetible, alarmas);
+        this.agregarAlarmas(repetible, evento.getAlarmas());
         return repetible;
     }
 

@@ -31,7 +31,7 @@ public class Alarma {
         this.duenioRepetible = duenioRepetible;
     }
 
-    public void marcarComoNoRepetible(Evento evento) {
+    public void marcarComoNoRepetible() {
         this.duenioRepetible = null;
     }
 
