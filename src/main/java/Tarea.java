@@ -18,7 +18,7 @@ public class Tarea extends Item {
 
     @Override
     public LocalDateTime getIdTiempo() {
-        return this.fechaDeVencimiento;
+        return fechaDeVencimiento;
     }
 
     public void setFechaDeVencimiento(LocalDateTime fechaDeVencimiento) {
@@ -26,12 +26,12 @@ public class Tarea extends Item {
     }
 
     public boolean toggleCompletacion() {
-        this.completada = !this.completada;
-        return this.completada;
+        completada = !completada;
+        return completada;
     }
 
     public boolean toggleTodoElDia() {
-        this.todoElDia = !this.todoElDia;
-        return this.todoElDia;
+        todoElDia = !todoElDia;
+        return todoElDia;
     }
 }

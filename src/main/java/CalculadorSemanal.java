@@ -2,7 +2,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CalculadorSemanal implements CalculadorDeFechas {
-
     @Override
     public LocalDateTime calcularFechaLimite(EventoRepetible repetible, Alarma alarma) {
         LocalDateTime dia = alarma.getFechaHoraOriginal();

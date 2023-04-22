@@ -3,13 +3,14 @@ import java.util.*;
 
 public class Calendario {
     static class ComparadorAlarmas implements Comparator<Alarma> {
+        @Override
         public int compare(Alarma a1, Alarma a2) {
             return a1.getFechaHoraDisparo().compareTo(a2.getFechaHoraDisparo());
         }
     }
 
     private final PriorityQueue<Alarma> alarmas = new PriorityQueue<>(new ComparadorAlarmas());
-    private final Map<LocalDate,HashSet<Item>> items = new HashMap<>();
+    private final Map<LocalDate,Set<Item>> items = new HashMap<>();
     private final Set<EventoRepetible> repetibles = new HashSet<>();
     private final String mail;
 
@@ -18,46 +19,46 @@ public class Calendario {
     }
 
     public Alarma getProximaAlarma() {
-        return this.alarmas.peek();
+        return alarmas.peek();
     }
 
     public void dispararAlarma() {
-        if (this.alarmas.isEmpty())
+        if (alarmas.isEmpty())
             return;
 
-        var alarma = this.alarmas.poll();
-        alarma.disparar(this.mail);
+        var alarma = alarmas.poll();
+        alarma.disparar(mail);
         if (alarma.getFechaHoraDisparo() != null) {
-            this.alarmas.add(alarma);
+            alarmas.add(alarma);
         }
     }
 
     public Calendario agregar(Item item) {
-        var set = this.items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new HashSet<>());
+        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new HashSet<>());
         set.add(item);
         return this;
     }
 
     public Calendario agregar(EventoRepetible repetible) {
-        this.repetibles.add(repetible);
+        repetibles.add(repetible);
         return this;
     }
 
     public void eliminar(Item item) {
-        var set = this.items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new HashSet<>());
+        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new HashSet<>());
 
         set.remove(item);
-        this.alarmas.removeAll(item.getAlarmas());
+        alarmas.removeAll(item.getAlarmas());
     }
 
     public void eliminar(EventoRepetible repetible) {
-        this.repetibles.remove(repetible);
-        this.alarmas.removeAll(repetible.getAlarmas());
+        repetibles.remove(repetible);
+        alarmas.removeAll(repetible.getAlarmas());
     }
 
     public void agregarAlarma(Item item, Alarma alarma) {
         item.agregarAlarma(alarma);
-        this.alarmas.add(alarma);
+        alarmas.add(alarma);
     }
 
     public void agregarAlarmas(Item item, List<Alarma> alarmas) {
@@ -67,22 +68,22 @@ public class Calendario {
 
     public void borrarAlarma(Item item, Alarma alarma) {
         item.borrarAlarma(alarma);
-        this.alarmas.remove(alarma);
+        alarmas.remove(alarma);
     }
 
     public Evento toEvento(EventoRepetible repetible) {
         var evento = new Evento(repetible);
-        this.eliminar(repetible);
-        this.agregar(evento);
-        this.agregarAlarmas(evento, repetible.getAlarmas());
+        eliminar(repetible);
+        agregar(evento);
+        agregarAlarmas(evento, repetible.getAlarmas());
         return evento;
     }
 
     public EventoRepetible toRepetible(Evento evento) {
         var repetible = new EventoRepetible(evento);
-        this.eliminar(evento);
-        this.agregar(repetible);
-        this.agregarAlarmas(repetible, evento.getAlarmas());
+        eliminar(evento);
+        agregar(repetible);
+        agregarAlarmas(repetible, evento.getAlarmas());
         return repetible;
     }
 

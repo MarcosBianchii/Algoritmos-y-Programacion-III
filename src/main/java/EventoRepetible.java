@@ -31,87 +31,87 @@ public class EventoRepetible extends Evento {
     }
 
     public int getCantidadRepeticiones() {
-        return this.cantidadRepeticiones;
+        return cantidadRepeticiones;
     }
 
     public ArrayList<Boolean> getDias() {
-        return this.dias;
+        return dias;
     }
 
     public int getFrecuenciaDiaria() {
-        return this.frecuenciaDiaria;
+        return frecuenciaDiaria;
     }
 
     // Si se repite todos los dias, el intervalo tiene que ser = 1
     public void setRepeticionDiaria(int intevalo, int cantidad) {
-        this.calculador = new CalculadorDiario();
-        this.cantidadRepeticiones = cantidad;
-        this.frecuenciaDiaria = intevalo;
+        calculador = new CalculadorDiario();
+        cantidadRepeticiones = cantidad;
+        frecuenciaDiaria = intevalo;
     }
 
     public void setRepeticionDiaria(int intervalo, LocalDateTime hasta) {
-        this.calculador = new CalculadorDiario();
+        calculador = new CalculadorDiario();
         long cantidad = this.inicio.until(hasta, ChronoUnit.DAYS);
-        this.cantidadRepeticiones = Math.toIntExact((long) Math.floor((double) Math.toIntExact(cantidad) / intervalo));
-        this.frecuenciaDiaria = intervalo;
+        cantidadRepeticiones = Math.toIntExact((long) Math.floor((double) Math.toIntExact(cantidad) / intervalo));
+        frecuenciaDiaria = intervalo;
     }
 
     public void setRepeticionSemanal(ArrayList<Boolean> dias, int cantidad) {
-        this.calculador = new CalculadorSemanal();
+        calculador = new CalculadorSemanal();
         this.dias.clear();
         this.dias.addAll(dias);
-        this.cantidadRepeticiones = cantidad;
+        cantidadRepeticiones = cantidad;
     }
 
     public void setRepeticionSemanal(ArrayList<Boolean> dias, LocalDateTime hasta) {
-        this.calculador = new CalculadorSemanal();
+        calculador = new CalculadorSemanal();
         this.dias.clear();
         this.dias.addAll(dias);
         long cantidad = this.inicio.until(hasta, ChronoUnit.WEEKS);
-        this.cantidadRepeticiones = Math.toIntExact(cantidad);
+        cantidadRepeticiones = Math.toIntExact(cantidad);
     }
 
     public void setRepeticionMensual(int cantidad) {
-        this.calculador = new CalculadorMensual();
-        this.cantidadRepeticiones = cantidad;
+        calculador = new CalculadorMensual();
+        cantidadRepeticiones = cantidad;
     }
 
     public void setRepeticionMensual(LocalDateTime hasta) {
-        this.calculador = new CalculadorMensual();
-        long cantidad = this.inicio.until(hasta, ChronoUnit.MONTHS);
-        this.cantidadRepeticiones = Math.toIntExact(cantidad);
+        calculador = new CalculadorMensual();
+        long cantidad = inicio.until(hasta, ChronoUnit.MONTHS);
+        cantidadRepeticiones = Math.toIntExact(cantidad);
     }
 
     public void setRepeticionAnual(int cantidad) {
-        this.calculador = new CalculadorAnual();
-        this.cantidadRepeticiones = cantidad;
+        calculador = new CalculadorAnual();
+        cantidadRepeticiones = cantidad;
     }
 
     public void setRepeticionAnual(LocalDateTime hasta) {
-        this.calculador = new CalculadorAnual();
-        long cantidad = this.inicio.until(hasta, ChronoUnit.YEARS);
-        this.cantidadRepeticiones = Math.toIntExact(cantidad);
+        calculador = new CalculadorAnual();
+        long cantidad = inicio.until(hasta, ChronoUnit.YEARS);
+        cantidadRepeticiones = Math.toIntExact(cantidad);
     }
 
     public boolean caeEntre(LocalDate desde, LocalDate hasta) {
-        LocalDate fecha = this.inicio.toLocalDate();
+        LocalDate fecha = inicio.toLocalDate();
 
-        for (int i = 0; i < this.cantidadRepeticiones; i++) {
+        for (int i = 0; i < cantidadRepeticiones; i++) {
             if (fecha.isAfter(desde.minusDays(1)) && fecha.isBefore(hasta))
                 return true;
 
             if (fecha.isAfter(hasta))
                 break;
 
-            fecha = this.calculador.sumarRepeticion(fecha, 1);
+            fecha = calculador.sumarRepeticion(fecha, 1);
         }
 
         return false;
     }
 
     public LocalDateTime computarProximaFecha(Alarma alarma) {
-        LocalDateTime fecha = this.calculador.calcularFechaSiguiente(this, alarma);
-        LocalDateTime fechaLimite = this.calculador.calcularFechaLimite(this, alarma);
+        LocalDateTime fecha = calculador.calcularFechaSiguiente(this, alarma);
+        LocalDateTime fechaLimite = calculador.calcularFechaLimite(this, alarma);
         return fecha.isAfter(fechaLimite) ? null : fecha;
     }
 }

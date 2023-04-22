@@ -4,7 +4,7 @@ import java.util.*;
 public abstract class Item {
     protected String titulo;
     protected String descripcion;
-    protected final HashMap<LocalDateTime, Alarma> alarmas = new HashMap<>();
+    protected final HashMap<LocalDateTime,Alarma> alarmas = new HashMap<>();
 
     public abstract LocalDateTime getIdTiempo();
 
@@ -17,11 +17,11 @@ public abstract class Item {
     }
 
     public List<Alarma> getAlarmas() {
-        return new ArrayList<>(this.alarmas.values());
+        return new ArrayList<>(alarmas.values());
     }
 
     public void agregarAlarma(Alarma alarma) {
-        this.alarmas.put(alarma.getFechaHoraDisparo(), alarma);
+        alarmas.put(alarma.getFechaHoraDisparo(), alarma);
         alarma.marcarComoNoRepetible();
     }
 
@@ -33,6 +33,6 @@ public abstract class Item {
     }
 
     public void borrarAlarma(Alarma alarma) {
-        this.alarmas.remove(alarma.getFechaHoraDisparo());
+        alarmas.remove(alarma.getFechaHoraDisparo());
     }
 }

@@ -12,15 +12,15 @@ public class Evento extends Item {
     }
 
     public Evento(EventoRepetible repetible) {
-        this.titulo = repetible.titulo;
-        this.descripcion = repetible.descripcion;
-        this.inicio = repetible.inicio;
-        this.fin = repetible.fin;
+        titulo = repetible.titulo;
+        descripcion = repetible.descripcion;
+        inicio = repetible.inicio;
+        fin = repetible.fin;
     }
 
     @Override
     public LocalDateTime getIdTiempo() {
-        return this.inicio;
+        return inicio;
     }
 
     public void setInicio(LocalDateTime inicio) {
