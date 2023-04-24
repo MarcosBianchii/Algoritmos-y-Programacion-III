@@ -69,5 +69,5 @@ public class Alarma {
         }
 
         else this.setFechaHoraDisparo(null);
-    }
+    } // test branches
 }
