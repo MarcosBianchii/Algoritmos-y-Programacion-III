@@ -10,8 +10,8 @@ public class Calendario {
     }
 
     private final PriorityQueue<Alarma> alarmas = new PriorityQueue<>(new ComparadorAlarmas());
-    private final Map<LocalDate,Set<Item>> items = new HashMap<>();
-    private final Set<EventoRepetible> repetibles = new HashSet<>();
+    private final Map<LocalDate,List<Item>> items = new HashMap<>();
+    private final List<EventoRepetible> repetibles = new ArrayList<>();
     private final String mail;
 
     public Calendario(String mail) {
@@ -34,7 +34,7 @@ public class Calendario {
     }
 
     public Calendario agregar(Item item) {
-        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new HashSet<>());
+        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
         set.add(item);
         return this;
     }
@@ -45,7 +45,7 @@ public class Calendario {
     }
 
     public void eliminar(Item item) {
-        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new HashSet<>());
+        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
 
         set.remove(item);
         alarmas.removeAll(item.getAlarmas());
@@ -87,8 +87,8 @@ public class Calendario {
         return repetible;
     }
 
-    public Set<Item> getItems(LocalDate desde, LocalDate hasta) {
-        var set = new HashSet<Item>();
+    public List<Item> getItems(LocalDate desde, LocalDate hasta) {
+        var set = new ArrayList<Item>();
         for (var fecha = desde; fecha.isBefore(hasta); fecha = fecha.plusDays(1)) {
             var items = this.items.get(fecha);
             if (items != null) set.addAll(items);
@@ -101,7 +101,7 @@ public class Calendario {
         return set;
     }
 
-    public Set<Item> getItems(LocalDateTime desde, LocalDateTime hasta) {
+    public List<Item> getItems(LocalDateTime desde, LocalDateTime hasta) {
         return getItems(desde.toLocalDate(), hasta.toLocalDate());
     }
 }

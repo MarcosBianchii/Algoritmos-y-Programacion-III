@@ -1,9 +1,11 @@
+import java.io.PrintStream;
 import java.time.LocalDateTime;
 
 public class Alarma {
     private LocalDateTime fechaHoraDisparo;
     private final LocalDateTime fechaHoraOriginal;
     private EventoRepetible duenioRepetible = null;
+    private PrintStream impresora = System.out;
 
     private boolean mandaMail = false;
     private boolean suena = false;
@@ -13,6 +15,11 @@ public class Alarma {
     public Alarma(LocalDateTime fechaHoraDisparo) { // Sonido sonido
         this.fechaHoraDisparo = fechaHoraDisparo;
         this.fechaHoraOriginal = fechaHoraDisparo;
+    }
+
+    public Alarma(LocalDateTime fechaHoraDisparo, PrintStream out) {
+        this(fechaHoraDisparo);
+        this.impresora = out;
     }
 
     public LocalDateTime getFechaHoraDisparo() {
@@ -41,17 +48,18 @@ public class Alarma {
         this.muestraNotificacion = muestraNotificacion;
     }
 
+    // En el caso de querer agregar mas funcionalidad, habria que aplicar algun patron como Command
     public void disparar(String mail) {
         if (this.mandaMail) {
-            System.out.println("Enviando mail a " + mail);
+            impresora.println("Enviando mail a " + mail);
         }
 
         if (this.suena) {
-            System.out.println("Sonando");
+            impresora.println("Sonando");
         }
 
         if (this.muestraNotificacion) {
-            System.out.println("Mostrando notificacion");
+            impresora.println("Mostrando notificacion");
         }
 
         if (this.duenioRepetible != null) {
@@ -62,5 +70,4 @@ public class Alarma {
 
         else this.setFechaHoraDisparo(null);
     }
-
 }

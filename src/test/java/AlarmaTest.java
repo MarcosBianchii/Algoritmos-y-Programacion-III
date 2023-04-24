@@ -22,9 +22,13 @@ public class AlarmaTest {
     @Test
     public void testDispararAlarma(){
         var ahora = LocalDateTime.now();
-        var alarma = new Alarma(ahora);
+        var impresora = new ImpresoraMock();
+        var alarma = new Alarma(ahora, impresora);
         alarma.setConfig(true, true, true);
         alarma.disparar("prueba@fi.uba.ar");
-        // Aca iria el assert pero no se podria testear todavia
+
+        assertTrue(impresora.seImprimio("Enviando mail a prueba@fi.uba.ar"));
+        assertTrue(impresora.seImprimio("Sonando"));
+        assertTrue(impresora.seImprimio("Mostrando notificacion"));
     }
 }

@@ -16,7 +16,6 @@ public class EventoRepetible extends Evento {
     public EventoRepetible(Evento evento) {
         super(evento.titulo, evento.descripcion, evento.inicio, evento.fin);
     }
-
     @Override
     public void agregarAlarma(Alarma alarma) {
         super.agregarAlarma(alarma);
