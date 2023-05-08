@@ -1,7 +1,8 @@
 import java.time.*;
 import java.util.*;
+import java.io.*;
 
-public class Calendario {
+public class Calendario implements Serializable {
     static class ComparadorAlarmas implements Comparator<Alarma> {
         @Override
         public int compare(Alarma a1, Alarma a2) {
@@ -12,7 +13,9 @@ public class Calendario {
     private final PriorityQueue<Alarma> alarmas = new PriorityQueue<>(new ComparadorAlarmas());
     private final Map<LocalDate,List<Item>> items = new HashMap<>();
     private final List<EventoRepetible> repetibles = new ArrayList<>();
-    private final String mail;
+    private String mail = "prueba@fi.uba.ar";
+
+    public Calendario() {}
 
     public Calendario(String mail) {
         this.mail = mail;
@@ -34,8 +37,8 @@ public class Calendario {
     }
 
     public Calendario agregar(Item item) {
-        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
-        set.add(item);
+        var lista = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
+        lista.add(item);
         return this;
     }
 
@@ -45,9 +48,9 @@ public class Calendario {
     }
 
     public void eliminar(Item item) {
-        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
+        var lista = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
 
-        set.remove(item);
+        lista.remove(item);
         alarmas.removeAll(item.getAlarmas());
     }
 
@@ -88,20 +91,37 @@ public class Calendario {
     }
 
     public List<Item> getItems(LocalDate desde, LocalDate hasta) {
-        var set = new ArrayList<Item>();
+        var lista = new ArrayList<Item>();
         for (var fecha = desde; fecha.isBefore(hasta); fecha = fecha.plusDays(1)) {
             var items = this.items.get(fecha);
-            if (items != null) set.addAll(items);
+            if (items != null) lista.addAll(items);
         }
 
         for (var repetible : repetibles)
             if (repetible.caeEntre(desde, hasta))
-                set.add(repetible);
+                lista.add(repetible);
 
-        return set;
+        return lista;
     }
 
     public List<Item> getItems(LocalDateTime desde, LocalDateTime hasta) {
         return getItems(desde.toLocalDate(), hasta.toLocalDate());
+    }
+
+    public void serializar(String path) throws IOException {
+        var file = new FileOutputStream(path);
+        var out = new ObjectOutputStream(file);
+        out.writeObject(this);
+        out.close();
+        file.close();
+    }
+
+    public static Calendario deserializar(String path) throws IOException, ClassNotFoundException {
+        var file = new FileInputStream(path);
+        var in = new ObjectInputStream(file);
+        var calendario = (Calendario) in.readObject();
+        in.close();
+        file.close();
+        return calendario;
     }
 }

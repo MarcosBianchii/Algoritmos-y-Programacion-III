@@ -1,7 +1,8 @@
 import java.time.LocalDateTime;
+import java.io.Serializable;
 import java.util.*;
 
-public abstract class Item {
+public abstract class Item implements Serializable {
     protected String titulo;
     protected String descripcion;
     protected final HashMap<LocalDateTime,Alarma> alarmas = new HashMap<>();

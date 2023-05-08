@@ -1,7 +1,8 @@
-import java.io.PrintStream;
 import java.time.LocalDateTime;
+import java.io.PrintStream;
+import java.io.Serializable;
 
-public class Alarma {
+public class Alarma implements Serializable {
     private LocalDateTime fechaHoraDisparo;
     private final LocalDateTime fechaHoraOriginal;
     private EventoRepetible duenioRepetible = null;
@@ -69,5 +70,5 @@ public class Alarma {
         }
 
         else this.setFechaHoraDisparo(null);
-    } // test branches
+    }
 }

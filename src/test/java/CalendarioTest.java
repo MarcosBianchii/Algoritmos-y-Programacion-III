@@ -1,5 +1,7 @@
 import org.junit.*;
 import static org.junit.Assert.*;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -207,5 +209,39 @@ public class CalendarioTest {
         assertEquals(momento.plusDays(21), alarma.getFechaHoraDisparo());
         calendario.dispararAlarma();
         assertNull(alarma.getFechaHoraDisparo());
+    }
+
+    public void serializar(Calendario calendario, String path) {
+        var momento = LocalDateTime.of(2023, 4, 17, 0, 0);
+        var repetible = new EventoRepetible("Evento 0", "Descripcion 0", momento, momento);
+        var alarma = new Alarma(momento);
+        var dias = new ArrayList<>(List.of(new Boolean[]{true, false, true, false, false, false, false}));
+
+        repetible.setRepeticionSemanal(dias, 2);
+        calendario.agregar(repetible).agregarAlarma(repetible, alarma);
+
+        try {
+            calendario.serializar(path);
+        } catch (IOException e) {
+            fail();
+        }
+    }
+
+    public Calendario deserializar(String path) {
+        try {
+            return Calendario.deserializar(path);
+        } catch (IOException | ClassNotFoundException e) {
+            fail();
+            return null;
+        }
+    }
+
+    @Test
+    public void serializarDeserializar() {
+        var path = "src/test/java/calendario.txt";
+        var calendario1 = new Calendario();
+        serializar(calendario1, path);
+        var calendario2 = deserializar(path);
+        assertEquals(calendario1, calendario2);
     }
 }
