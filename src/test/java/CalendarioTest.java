@@ -239,12 +239,15 @@ public class CalendarioTest {
 
     @Test
     public void serializarDeserializar() {
-        var calendario1 = new Calendario();
+        var calendario1 = new Calendario("mail");
         var momento = LocalDateTime.of(2023, 4, 17, 0, 0);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         serializar(calendario1, bytes,momento);
+
+        var alarma = calendario1.getProximaAlarma();
         var calendario2 = deserializar(bytes);
         assertNotNull(calendario2);
         assertEquals(calendario1.getItems(momento, momento.plusWeeks(1)).size(), calendario2.getItems(momento, momento.plusWeeks(1)).size());
+        assertEquals(calendario1.getProximaAlarma().getFechaHoraDisparo(), calendario2.getProximaAlarma().getFechaHoraDisparo());
     }
 }

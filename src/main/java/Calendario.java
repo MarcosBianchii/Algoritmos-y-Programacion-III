@@ -13,9 +13,7 @@ public class Calendario implements Serializable {
     private final PriorityQueue<Alarma> alarmas = new PriorityQueue<>(new ComparadorAlarmas());
     private final Map<LocalDate,List<Item>> items = new HashMap<>();
     private final List<EventoRepetible> repetibles = new ArrayList<>();
-    private String mail = "prueba@fi.uba.ar";
-
-    public Calendario() {}
+    private final String mail;
 
     public Calendario(String mail) {
         this.mail = mail;
