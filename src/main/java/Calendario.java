@@ -3,7 +3,7 @@ import java.util.*;
 import java.io.*;
 
 public class Calendario implements Serializable {
-    static class ComparadorAlarmas implements Comparator<Alarma> {
+    static class ComparadorAlarmas implements Serializable, Comparator<Alarma> {
         @Override
         public int compare(Alarma a1, Alarma a2) {
             return a1.getFechaHoraDisparo().compareTo(a2.getFechaHoraDisparo());
@@ -108,20 +108,14 @@ public class Calendario implements Serializable {
         return getItems(desde.toLocalDate(), hasta.toLocalDate());
     }
 
-    public void serializar(String path) throws IOException {
-        var file = new FileOutputStream(path);
-        var out = new ObjectOutputStream(file);
+    public void serializar(OutputStream os) throws IOException {
+        var out = new ObjectOutputStream(os);
         out.writeObject(this);
-        out.close();
-        file.close();
+        out.flush();
     }
 
-    public static Calendario deserializar(String path) throws IOException, ClassNotFoundException {
-        var file = new FileInputStream(path);
-        var in = new ObjectInputStream(file);
-        var calendario = (Calendario) in.readObject();
-        in.close();
-        file.close();
-        return calendario;
+    public static Calendario deserializar(InputStream is) throws IOException, ClassNotFoundException {
+        var in = new ObjectInputStream(is);
+        return (Calendario) in.readObject();
     }
 }

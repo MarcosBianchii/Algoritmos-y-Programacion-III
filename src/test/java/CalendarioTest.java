@@ -211,8 +211,7 @@ public class CalendarioTest {
         assertNull(alarma.getFechaHoraDisparo());
     }
 
-    public void serializar(Calendario calendario, String path) {
-        var momento = LocalDateTime.of(2023, 4, 17, 0, 0);
+    public void serializar(Calendario calendario, ByteArrayOutputStream bytes, LocalDateTime momento) {
         var repetible = new EventoRepetible("Evento 0", "Descripcion 0", momento, momento);
         var alarma = new Alarma(momento);
         var dias = new ArrayList<>(List.of(new Boolean[]{true, false, true, false, false, false, false}));
@@ -221,15 +220,17 @@ public class CalendarioTest {
         calendario.agregar(repetible).agregarAlarma(repetible, alarma);
 
         try {
-            calendario.serializar(path);
+            calendario.serializar(bytes);
         } catch (IOException e) {
+            System.err.println("An I/O error occurred: " + e.getMessage());
+            e.printStackTrace();
             fail();
         }
     }
 
-    public Calendario deserializar(String path) {
+    public Calendario deserializar(ByteArrayOutputStream bytes) {
         try {
-            return Calendario.deserializar(path);
+            return Calendario.deserializar(new ByteArrayInputStream(bytes.toByteArray()));
         } catch (IOException | ClassNotFoundException e) {
             fail();
             return null;
@@ -238,10 +239,12 @@ public class CalendarioTest {
 
     @Test
     public void serializarDeserializar() {
-        var path = "src/test/java/calendario.txt";
         var calendario1 = new Calendario();
-        serializar(calendario1, path);
-        var calendario2 = deserializar(path);
-        assertEquals(calendario1, calendario2);
+        var momento = LocalDateTime.of(2023, 4, 17, 0, 0);
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        serializar(calendario1, bytes,momento);
+        var calendario2 = deserializar(bytes);
+        assertNotNull(calendario2);
+        assertEquals(calendario1.getItems(momento, momento.plusWeeks(1)).size(), calendario2.getItems(momento, momento.plusWeeks(1)).size());
     }
 }

@@ -6,7 +6,7 @@ public class Alarma implements Serializable {
     private LocalDateTime fechaHoraDisparo;
     private final LocalDateTime fechaHoraOriginal;
     private EventoRepetible duenioRepetible = null;
-    private PrintStream impresora = System.out;
+    private transient PrintStream impresora = System.out;
 
     private boolean mandaMail = false;
     private boolean suena = false;
