@@ -9,6 +9,14 @@ public abstract class Item implements Serializable {
 
     public abstract LocalDateTime getIdTiempo();
 
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }

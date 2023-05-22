@@ -215,14 +215,16 @@ public class CalendarioTest {
         var repetible = new EventoRepetible("Evento 0", "Descripcion 0", momento, momento);
         var alarma = new Alarma(momento);
         var dias = new ArrayList<>(List.of(new Boolean[]{true, false, true, false, false, false, false}));
+        var tarea = new Tarea("Tarea 0", "Descripcion 0", momento);
 
         repetible.setRepeticionSemanal(dias, 2);
+        calendario.agregar(tarea);
         calendario.agregar(repetible).agregarAlarma(repetible, alarma);
 
         try {
             calendario.serializar(bytes);
         } catch (IOException e) {
-            System.err.println("An I/O error occurred: " + e.getMessage());
+            System.err.println("I/O error: " + e.getMessage());
             e.printStackTrace();
             fail();
         }
@@ -242,12 +244,20 @@ public class CalendarioTest {
         var calendario1 = new Calendario("mail");
         var momento = LocalDateTime.of(2023, 4, 17, 0, 0);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        serializar(calendario1, bytes,momento);
+        serializar(calendario1, bytes, momento);
 
-        var alarma = calendario1.getProximaAlarma();
         var calendario2 = deserializar(bytes);
         assertNotNull(calendario2);
-        assertEquals(calendario1.getItems(momento, momento.plusWeeks(1)).size(), calendario2.getItems(momento, momento.plusWeeks(1)).size());
         assertEquals(calendario1.getProximaAlarma().getFechaHoraDisparo(), calendario2.getProximaAlarma().getFechaHoraDisparo());
+
+        var items1 = calendario1.getItems(momento, momento.plusDays(1));
+        var items2 = calendario2.getItems(momento, momento.plusDays(1));
+
+        assertEquals(items1.size(), items2.size());
+        for (int i = 0; i < items1.size(); i++) {
+            assertEquals(items1.get(i).getTitulo(), items2.get(i).getTitulo());
+            assertEquals(items1.get(i).getDescripcion(), items2.get(i).getDescripcion());
+            assertEquals(items1.get(i).getIdTiempo(), items2.get(i).getIdTiempo());
+        }
     }
 }
