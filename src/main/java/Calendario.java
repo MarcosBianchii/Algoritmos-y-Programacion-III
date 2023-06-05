@@ -1,8 +1,9 @@
 import java.time.*;
 import java.util.*;
+import java.io.*;
 
-public class Calendario {
-    static class ComparadorAlarmas implements Comparator<Alarma> {
+public class Calendario implements Serializable {
+    static class ComparadorAlarmas implements Serializable, Comparator<Alarma> {
         @Override
         public int compare(Alarma a1, Alarma a2) {
             return a1.getFechaHoraDisparo().compareTo(a2.getFechaHoraDisparo());
@@ -34,8 +35,8 @@ public class Calendario {
     }
 
     public Calendario agregar(Item item) {
-        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
-        set.add(item);
+        var lista = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
+        lista.add(item);
         return this;
     }
 
@@ -45,9 +46,9 @@ public class Calendario {
     }
 
     public void eliminar(Item item) {
-        var set = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
+        var lista = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
 
-        set.remove(item);
+        lista.remove(item);
         alarmas.removeAll(item.getAlarmas());
     }
 
@@ -88,20 +89,31 @@ public class Calendario {
     }
 
     public List<Item> getItems(LocalDate desde, LocalDate hasta) {
-        var set = new ArrayList<Item>();
+        var lista = new ArrayList<Item>();
         for (var fecha = desde; fecha.isBefore(hasta); fecha = fecha.plusDays(1)) {
             var items = this.items.get(fecha);
-            if (items != null) set.addAll(items);
+            if (items != null) lista.addAll(items);
         }
 
         for (var repetible : repetibles)
             if (repetible.caeEntre(desde, hasta))
-                set.add(repetible);
+                lista.add(repetible);
 
-        return set;
+        return lista;
     }
 
     public List<Item> getItems(LocalDateTime desde, LocalDateTime hasta) {
         return getItems(desde.toLocalDate(), hasta.toLocalDate());
+    }
+
+    public void serializar(OutputStream os) throws IOException {
+        var out = new ObjectOutputStream(os);
+        out.writeObject(this);
+        out.flush();
+    }
+
+    public static Calendario deserializar(InputStream is) throws IOException, ClassNotFoundException {
+        var in = new ObjectInputStream(is);
+        return (Calendario) in.readObject();
     }
 }
