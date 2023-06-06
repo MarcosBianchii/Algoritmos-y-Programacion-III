@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="363.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <DatePicker id="EventoFechaInicial" layoutX="18.0" layoutY="165.0" prefHeight="25.0" prefWidth="157.0" />
+      <TextField id="EventoTitulo" layoutX="18.0" layoutY="34.0" prefHeight="25.0" prefWidth="157.0" />
+      <TextArea id="EventoDescripcion" layoutX="18.0" layoutY="76.0" prefHeight="70.0" prefWidth="330.0" />
+      <DatePicker id="EventoFechaFinal" layoutX="18.0" layoutY="211.0" prefHeight="25.0" prefWidth="157.0" />
+      <ChoiceBox id="EventoRepeticion" layoutX="200.0" layoutY="165.0" prefHeight="25.0" prefWidth="149.0" />
+      <Button id="EventoAgregarAlarmas" layoutX="215.0" layoutY="34.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="118.0" text="Agregar alarmas" />
+      <Button id="EventoListo" layoutX="248.0" layoutY="211.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="53.0" text="Listo" />
+   </children>
+</Pane>
