@@ -1,7 +1,7 @@
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class CalculadorSemanal implements CalculadorDeFechas {
+public class CalculadorSemanal extends CalculadorDeFechas {
     @Override
     public LocalDateTime calcularFechaLimite(EventoRepetible repetible, Alarma alarma) {
         LocalDateTime dia = alarma.getFechaHoraOriginal();
@@ -34,5 +34,36 @@ public class CalculadorSemanal implements CalculadorDeFechas {
     @Override
     public LocalDate sumarRepeticion(LocalDate fecha, int repeticion) {
         return fecha.plusWeeks(repeticion);
+    }
+
+    private LocalDate proximaFecha(EventoRepetible repetible, LocalDate fecha) {
+        var f = fecha;
+        int inicial = fecha.getDayOfWeek().getValue();
+        for (int i = 0; true; i++) {
+            int indice = (inicial + i) % repetible.getDias().size();
+            if (repetible.getDias().get(indice)) {
+                f = f.plusDays(i + 1);
+                break;
+            }
+        }
+
+        return f;
+    }
+
+    @Override
+    public boolean caeEn(EventoRepetible repetible, LocalDate fecha) {
+        LocalDate f = repetible.inicio.toLocalDate();
+        long corte = repetible.getCantidadRepeticiones() * repetible.getDias().stream().filter(x -> x).count();
+        for (int i = 0; i <= corte || repetible.esInfinito(); i++) {
+            if (f.isEqual(fecha))
+                return true;
+
+            if (f.isAfter(fecha))
+                break;
+
+            f = proximaFecha(repetible, f);
+        }
+
+        return false;
     }
 }

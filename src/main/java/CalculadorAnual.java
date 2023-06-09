@@ -1,7 +1,7 @@
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
-public class CalculadorAnual implements CalculadorDeFechas {
+public class CalculadorAnual extends CalculadorDeFechas {
     @Override
     public LocalDateTime calcularFechaLimite(EventoRepetible repetible, Alarma alarma) {
         return alarma.getFechaHoraOriginal().plusYears(repetible.getCantidadRepeticiones());

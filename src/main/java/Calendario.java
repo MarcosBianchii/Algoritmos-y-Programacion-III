@@ -93,11 +93,12 @@ public class Calendario implements Serializable {
         for (var fecha = desde; fecha.isBefore(hasta); fecha = fecha.plusDays(1)) {
             var items = this.items.get(fecha);
             if (items != null) lista.addAll(items);
-        }
 
-        for (var repetible : repetibles)
-            if (repetible.caeEntre(desde, hasta))
-                lista.add(repetible);
+            for (var repetible : repetibles) {
+                if (repetible.caeEn(fecha))
+                    lista.add(new EventoRepetibleDecorator(repetible, fecha));
+            }
+        }
 
         return lista;
     }

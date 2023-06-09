@@ -1,7 +1,7 @@
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
-public class CalculadorMensual implements CalculadorDeFechas {
+public class CalculadorMensual extends CalculadorDeFechas {
     @Override
     public LocalDateTime calcularFechaLimite(EventoRepetible repetible, Alarma alarma) {
         return alarma.getFechaHoraOriginal().plusMonths(repetible.getCantidadRepeticiones());
