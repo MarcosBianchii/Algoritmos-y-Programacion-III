@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="117.0" prefWidth="278.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Spinner fx:id="AlarmasHoraTarea" editable="true" layoutX="14.0" layoutY="14.0" />
+      <Spinner fx:id="AlarmasMinutosTarea" layoutX="14.0" layoutY="46.0" />
+      <CheckBox fx:id="AlarmasNotiTarea" layoutX="178.0" layoutY="50.0" mnemonicParsing="false" text="notificacion" />
+      <ChoiceBox fx:id="AlarmasRelatividadTarea" layoutX="174.0" layoutY="14.0" prefHeight="25.0" prefWidth="91.0" />
+      <Button fx:id="AlarmasListoTarea" layoutX="94.0" layoutY="84.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="91.0" text="Listo" />
+   </children>
+</Pane>

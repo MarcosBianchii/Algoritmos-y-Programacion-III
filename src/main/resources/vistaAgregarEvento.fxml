@@ -3,18 +3,21 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="363.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <DatePicker id="EventoFechaInicial" layoutX="18.0" layoutY="165.0" prefHeight="25.0" prefWidth="157.0" />
-      <TextField id="EventoTitulo" layoutX="18.0" layoutY="34.0" prefHeight="25.0" prefWidth="157.0" />
-      <TextArea id="EventoDescripcion" layoutX="18.0" layoutY="76.0" prefHeight="70.0" prefWidth="330.0" />
-      <DatePicker id="EventoFechaFinal" layoutX="18.0" layoutY="211.0" prefHeight="25.0" prefWidth="157.0" />
-      <ChoiceBox id="EventoRepeticion" layoutX="200.0" layoutY="165.0" prefHeight="25.0" prefWidth="149.0" />
-      <Button id="EventoAgregarAlarmas" layoutX="215.0" layoutY="34.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="118.0" text="Agregar alarmas" />
-      <Button id="EventoListo" layoutX="248.0" layoutY="211.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="53.0" text="Listo" />
+      <DatePicker fx:id="EventoFechaInicial" layoutX="18.0" layoutY="178.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingreasar fecha inicial" />
+      <TextField fx:id="EventoTitulo" layoutX="18.0" layoutY="34.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingresar titulo" />
+      <TextArea fx:id="EventoDescripcion" layoutX="18.0" layoutY="76.0" prefHeight="63.0" prefWidth="330.0" promptText="Ingresar descripcion" />
+      <DatePicker fx:id="EventoFechaFinal" layoutX="18.0" layoutY="211.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingresar fecha final" />
+      <ChoiceBox fx:id="EventoRepeticion" layoutX="200.0" layoutY="165.0" prefHeight="25.0" prefWidth="149.0" />
+      <Button fx:id="EventoAgregarAlarmas" layoutX="215.0" layoutY="34.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="118.0" text="Agregar alarmas" />
+      <Button fx:id="EventoListo" layoutX="248.0" layoutY="211.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="53.0" text="Listo" />
+      <Spinner fx:id="EventoHora" editable="true" layoutX="18.0" layoutY="146.0" prefHeight="25.0" prefWidth="73.0" />
+      <Spinner fx:id="EventoMinutos" layoutX="101.0" layoutY="146.0" prefHeight="25.0" prefWidth="73.0" />
    </children>
 </Pane>

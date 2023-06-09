@@ -43,10 +43,11 @@ public class Alarma implements Serializable {
         this.duenioRepetible = null;
     }
 
-    public void setConfig(boolean mandaMail, boolean suena, boolean muestraNotificacion) {
+    public Alarma setConfig(boolean mandaMail, boolean suena, boolean muestraNotificacion) {
         this.mandaMail = mandaMail;
         this.suena = suena;
         this.muestraNotificacion = muestraNotificacion;
+        return this;
     }
 
     // En el caso de querer agregar mas funcionalidad, habria que aplicar algun patron como Command

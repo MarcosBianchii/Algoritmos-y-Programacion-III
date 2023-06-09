@@ -58,11 +58,13 @@ public class Calendario implements Serializable {
     }
 
     public void agregarAlarma(Item item, Alarma alarma) {
+        if (alarma == null) return;
         item.agregarAlarma(alarma);
         alarmas.add(alarma);
     }
 
     public void agregarAlarmas(Item item, List<Alarma> alarmas) {
+        if (alarmas == null) return;
         item.agregarAlarmas(alarmas);
         this.alarmas.addAll(alarmas);
     }
