@@ -23,6 +23,10 @@ public class Evento extends Item {
         return inicio;
     }
 
+    public LocalDateTime getFin() {
+        return fin;
+    }
+
     public void setInicio(LocalDateTime inicio) {
         this.inicio = inicio;
     }

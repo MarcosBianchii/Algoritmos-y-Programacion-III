@@ -10,10 +10,10 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="363.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <DatePicker fx:id="TareaFechaInicial" layoutX="18.0" layoutY="211.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingresar fecha limite" />
+      <DatePicker fx:id="TareaFechaInicial" layoutX="18.0" layoutY="211.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingresar fecha limite" editable="false" />
       <TextField fx:id="TareaTitulo" layoutX="18.0" layoutY="34.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingresar Titulo" />
       <TextArea fx:id="TareaDescripcion" layoutX="18.0" layoutY="76.0" prefHeight="95.0" prefWidth="330.0" promptText="Ingresar Descripcion" />
-      <Button fx:id="TareaAgregarAlarmas" layoutX="202.0" layoutY="34.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="118.0" text="Agregar alarmas" />
+      <Button fx:id="TareaAgregarAlarmas" disable="true" layoutX="202.0" layoutY="34.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="118.0" text="Agregar alarma" />
       <Button fx:id="TareaListo" layoutX="280.0" layoutY="211.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="53.0" text="Listo" />
       <CheckBox fx:id="TareaTodoElDia" layoutX="191.0" layoutY="215.0" mnemonicParsing="false" text="Todo el dia" />
       <Spinner fx:id="TareaHora" layoutX="18.0" layoutY="178.0" prefHeight="25.0" prefWidth="80.0" promptText="Hora" editable="true" />

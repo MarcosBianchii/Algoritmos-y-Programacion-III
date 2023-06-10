@@ -1,20 +1,28 @@
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class EventoRepetibleDecorator extends EventoRepetible {
     private final EventoRepetible repetible;
-    private final LocalDate fecha;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
 
     public EventoRepetibleDecorator(EventoRepetible repetible, LocalDate fecha) {
         super(repetible);
         this.repetible = repetible;
-        this.fecha = fecha;
+        this.fechaInicio = fecha.atTime(repetible.inicio.toLocalTime());
+        this.fechaFin = fechaInicio.plus(repetible.inicio.until(repetible.fin, ChronoUnit.MILLIS), ChronoUnit.MILLIS);
     }
 
     @Override
     public LocalDateTime getIdTiempo() {
-        return fecha.atTime(repetible.inicio.getHour(), repetible.inicio.getMinute());
+        return fechaInicio;
+    }
+
+    @Override
+    public LocalDateTime getFin() {
+        return fechaFin;
     }
 
     @Override
@@ -40,11 +48,13 @@ public class EventoRepetibleDecorator extends EventoRepetible {
     @Override
     public void setInicio(LocalDateTime inicio) {
         repetible.setInicio(inicio);
+        fechaInicio = inicio;
     }
 
     @Override
     public void setFin(LocalDateTime fin) {
         repetible.setFin(fin);
+        fechaFin = fin;
     }
 
     @Override
