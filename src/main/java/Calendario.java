@@ -6,6 +6,10 @@ public class Calendario implements Serializable {
     static class ComparadorAlarmas implements Serializable, Comparator<Alarma> {
         @Override
         public int compare(Alarma a1, Alarma a2) {
+            if (a1 == null && a2 == null) return 0;
+            if (a1 == null) return 1;
+            if (a2 == null) return -1;
+
             return a1.getFechaHoraDisparo().compareTo(a2.getFechaHoraDisparo());
         }
     }
@@ -29,9 +33,8 @@ public class Calendario implements Serializable {
 
         var alarma = alarmas.poll();
         alarma.disparar(mail);
-        if (alarma.getFechaHoraDisparo() != null) {
+        if (alarma.getFechaHoraDisparo() != null)
             alarmas.add(alarma);
-        }
     }
 
     public Calendario agregar(Item item) {
@@ -46,7 +49,8 @@ public class Calendario implements Serializable {
     }
 
     public void eliminar(Item item) {
-        var lista = items.computeIfAbsent(item.getIdTiempo().toLocalDate(), k -> new ArrayList<>());
+        var lista = items.get(item.getIdTiempo().toLocalDate());
+        if (lista == null) return;
 
         lista.remove(item);
         alarmas.removeAll(item.getAlarmas());
@@ -55,6 +59,10 @@ public class Calendario implements Serializable {
     public void eliminar(EventoRepetible repetible) {
         repetibles.remove(repetible);
         alarmas.removeAll(repetible.getAlarmas());
+    }
+
+    public void eliminar(EventoRepetibleDecorator repetible) {
+        eliminar(repetible.getRepetible());
     }
 
     public void agregarAlarma(Item item, Alarma alarma) {

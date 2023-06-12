@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Tarea extends Item {
     private boolean todoElDia;
@@ -14,6 +15,24 @@ public class Tarea extends Item {
         this.descripcion = descripcion;
         this.fechaDeVencimiento = fechaDeVencimiento;
         this.todoElDia = todoElDia;
+    }
+
+    @Override
+    public String toString() {
+        var str = new StringBuilder();
+        var tamanioTitulo = 30;
+        str.append("T | ");
+        str.append(titulo, 0, Math.min(tamanioTitulo, titulo.length()));
+
+        if (str.length() < tamanioTitulo)
+            str.append(" ".repeat(tamanioTitulo - str.length()));
+
+        str.append(" | ").append(fechaDeVencimiento.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        str.append(" | ").append(completada ? "Completada" : "Pendiente");
+        str.append(todoElDia ? " | Todo el dia" : "");
+        str.append(!alarmas.isEmpty() ? " | " : "");
+        str.append("*".repeat(alarmas.size()));
+        return str.toString();
     }
 
     @Override

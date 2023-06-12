@@ -5,7 +5,7 @@ import java.util.*;
 public abstract class Item implements Serializable {
     protected String titulo;
     protected String descripcion;
-    protected final HashMap<LocalDateTime,Alarma> alarmas = new HashMap<>();
+    protected final Map<LocalDateTime,Alarma> alarmas = new HashMap<>();
 
     public abstract LocalDateTime getIdTiempo();
 

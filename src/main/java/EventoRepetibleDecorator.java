@@ -1,5 +1,6 @@
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -15,9 +16,30 @@ public class EventoRepetibleDecorator extends EventoRepetible {
         this.fechaFin = fechaInicio.plus(repetible.inicio.until(repetible.fin, ChronoUnit.MILLIS), ChronoUnit.MILLIS);
     }
 
+    public EventoRepetible getRepetible() {
+        return repetible;
+    }
+
     @Override
     public LocalDateTime getIdTiempo() {
         return fechaInicio;
+    }
+
+    @Override
+    public String toString() {
+        var str = new StringBuilder();
+        var tamanioTitulo = 30;
+        str.append("R | ");
+        str.append(titulo, 0, Math.min(tamanioTitulo, titulo.length()));
+
+        if (str.length() < tamanioTitulo)
+            str.append(" ".repeat(tamanioTitulo - str.length()));
+
+        str.append(" | ").append(fechaInicio.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        str.append(" | ").append(fechaFin.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        str.append(!alarmas.isEmpty() ? " | " : "");
+        str.append("*".repeat(alarmas.size()));
+        return str.toString();
     }
 
     @Override
