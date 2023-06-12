@@ -421,7 +421,7 @@ public class Main extends Application {
         }
     }
 
-    private static void guardarCalendario() {
+    private void guardarCalendario() {
         try {
             calendario.serializar(new FileOutputStream("src/main/calendario.bin"));
         } catch (IOException e) {
