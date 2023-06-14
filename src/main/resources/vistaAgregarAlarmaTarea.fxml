@@ -11,6 +11,5 @@
    <Spinner fx:id="AlarmasMinutosTarea" layoutX="14.0" layoutY="46.0"/>
    <CheckBox fx:id="AlarmasNotiTarea" layoutX="178.0" layoutY="50.0" mnemonicParsing="false" text="notificacion"/>
    <ChoiceBox fx:id="AlarmasRelatividadTarea" layoutX="174.0" layoutY="14.0" prefHeight="25.0" prefWidth="91.0"/>
-   <Button fx:id="AlarmasListoTarea" layoutX="94.0" layoutY="84.0" mnemonicParsing="false" prefHeight="25.0"
-           prefWidth="91.0" text="Listo"/>
+   <Button fx:id="AlarmasListoTarea" layoutX="94.0" layoutY="84.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="91.0" text="Listo" disable="true" />
 </Pane>

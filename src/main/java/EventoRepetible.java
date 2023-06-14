@@ -20,6 +20,7 @@ public class EventoRepetible extends Evento {
         cantidadRepeticiones = repetible.cantidadRepeticiones;
         dias.addAll(repetible.dias);
         frecuenciaDiaria = repetible.frecuenciaDiaria;
+        infinito = repetible.infinito;
     }
 
     public EventoRepetible(Evento evento) {
@@ -118,5 +119,9 @@ public class EventoRepetible extends Evento {
 
     public boolean esInfinito() {
         return infinito;
+    }
+
+    public CalculadorDeFechas getCalculador() {
+        return calculador;
     }
 }

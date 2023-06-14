@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 
@@ -37,6 +38,15 @@ public class Main extends Application {
     @FXML private Spinner<Integer> TareaHora;
     @FXML private Spinner<Integer> TareaMinutos;
 
+    @FXML private TextField TareaEdicionTitulo;
+    @FXML private TextField TareaEdicionDescripcion;
+    @FXML private Text TareaEdicionVencimiento;
+    @FXML private CheckBox TareaEdicionTodoElDia;
+    @FXML private Text TareaEdicionAlarmas;
+    @FXML private Button TareaEdicionGuardar;
+    @FXML private Button TareaEdicionEliminar;
+    @FXML private CheckBox TareaEdicionCompletada;
+
     // Vista agregar evento
     @FXML private TextField EventoTitulo;
     @FXML private TextArea EventoDescripcion;
@@ -45,8 +55,10 @@ public class Main extends Application {
     @FXML private ChoiceBox<String> EventoRepeticion;
     @FXML private Button EventoAgregarAlarmas;
     @FXML private Button EventoListo;
-    @FXML private Spinner<Integer> EventoHora;
-    @FXML private Spinner<Integer> EventoMinutos;
+    @FXML private Spinner<Integer> EventoHoraInicio;
+    @FXML private Spinner<Integer> EventoMinutosInicio;
+    @FXML private Spinner<Integer> EventoHoraFin;
+    @FXML private Spinner<Integer> EventoMinutosFin;
     @FXML private Spinner<Integer> EventoRepeticionCantidad;
     @FXML private DatePicker EventoRepeticionFecha;
     @FXML private Spinner<Integer> EventoRepeticionIntervalo;
@@ -57,6 +69,15 @@ public class Main extends Application {
     @FXML private CheckBox EventoViernes;
     @FXML private CheckBox EventoSabado;
     @FXML private CheckBox EventoDomingo;
+
+    @FXML private TextField EventoEdicionTitulo;
+    @FXML private TextField EventoEdicionDescripcion;
+    @FXML private Text EventoEdicionInicio;
+    @FXML private Text EventoEdicionFin;
+    @FXML private Text EventoEdicionAlarmas;
+    @FXML private Button EventoEdicionGuardar;
+    @FXML private Button EventoEdicionEliminar;
+    @FXML private Text EventoEdicionRepeticion;
 
     // Vista agregar alarmas
     @FXML private Spinner<Integer> AlarmasHoraTarea;
@@ -80,12 +101,14 @@ public class Main extends Application {
     private Stage stageAlarmaTarea;
     private Stage stageAlarmaEvento;
     private Stage stageMostrarAlarma;
+    private Stage stageEdicionTarea;
+    private Stage stageEdicionEvento;
 
     private final Calendario calendario = obtenerCalendario();
     private final ObservableList<Item> items = FXCollections.observableList(new ArrayList<>());
     private final List<Alarma> alarmasBuffer = new ArrayList<>();
-    int numeroIntervalo = 0;
-
+    private int numeroIntervalo = 0;
+    private Item itemEditado = null;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -94,9 +117,11 @@ public class Main extends Application {
         Pane contenedor = loader.load();
         var scene = new Scene(contenedor);
         stage.setTitle("Calendario");
+        stage.setOnCloseRequest(e -> guardarCalendario());
         stage.resizableProperty().setValue(false);
         stage.setScene(scene);
         stage.show();
+        actualiarLista();
 
         new AnimationTimer() {
             @Override
@@ -105,21 +130,25 @@ public class Main extends Application {
             }
         }.start();
 
-        mesIzquierda.setOnAction(e -> sumarMes(-1));
-        mesDerecha.setOnAction(e -> sumarMes(1));
-        stage.setOnCloseRequest(e -> guardarCalendario());
-        actualiarLista();
-
         // Vista principal
         stageTarea = inicializarVentanaTarea();
         stageEvento = inicializarVentanaEvento();
-        stageAlarmaTarea = inicializarVentanaAlarmas("vistaAgregarAlarmaTarea.fxml");
-        stageAlarmaEvento = inicializarVentanaAlarmas("vistaAgregarAlarmaEvento.fxml");
-        stageMostrarAlarma = inicializarVentanaMostrarAlarma();
-        ventanaTareaAlarmasSpinner();
-        ventanaEventoAlarmasSpinner();
         agregarTarea.setOnAction(e -> stageTarea.show());
         agregarEvento.setOnAction(e -> stageEvento.show());
+        listaItems.setOnMouseClicked(e -> listaClick());
+        mesIzquierda.setOnAction(e -> sumarMes(-1));
+        mesDerecha.setOnAction(e -> sumarMes(1));
+
+        // Vista edicion tarea
+        stageEdicionTarea = inicializarVentanaEdicionTarea();
+        TareaEdicionGuardar.setOnAction(e -> cambiarDatosTarea());
+        TareaEdicionEliminar.setOnAction(e -> eliminarItem());
+
+        // Vista edicion Evento
+        stageEdicionEvento = inicializarVentanaEdicionEvento();
+        EventoEdicionGuardar.setOnAction(e -> cambiarDatosEvento());
+        EventoEdicionEliminar.setOnAction(e -> eliminarItem());
+
 
         // Vista agregar tarea
         TareaListo.setOnAction(e -> tareaListo(stageTarea));
@@ -133,9 +162,85 @@ public class Main extends Application {
         EventoFechaInicial.showingProperty().addListener((obs, old, newV) -> eventoFechaInicialListener());
 
         // Vista alarmas
+        stageAlarmaTarea = inicializarVentanaAlarmas("vistaAgregarAlarmaTarea.fxml");
+        stageAlarmaEvento = inicializarVentanaAlarmas("vistaAgregarAlarmaEvento.fxml");
+        stageMostrarAlarma = inicializarVentanaMostrarAlarma();
+        ventanaTareaAlarmasSpinner();
+        ventanaEventoAlarmasSpinner();
+
         AlarmasListoTarea.setOnAction(e -> alarmasListoTarea(stageAlarmaTarea));
         AlarmasListoEvento.setOnAction(e -> alarmasListoEvento(stageAlarmaEvento));
+        AlarmasRelatividadTarea.showingProperty().addListener((obs, old, newV) -> alarmasRelatividadTareaListener());
+        AlarmasRelatividadEvento.showingProperty().addListener((obs, old, newV) -> alarmasRelatividadEventoListener());
         cerrarNotiAlarma.setOnAction(e -> stageMostrarAlarma.close());
+    }
+
+    private void eliminarItem() {
+        calendario.eliminar(itemEditado);
+        guardarCalendario();
+        actualiarLista();
+        stageEdicionTarea.close();
+        stageEdicionEvento.close();
+    }
+
+    private void cambiarDatosTarea() {
+        var tarea = (Tarea) itemEditado;
+        tarea.setTitulo(TareaEdicionTitulo.getText());
+        tarea.setDescripcion(TareaEdicionDescripcion.getText());
+        tarea.setTodoElDia(TareaEdicionTodoElDia.isSelected());
+        tarea.setCompletada(TareaEdicionCompletada.isSelected());
+        guardarCalendario();
+        actualiarLista();
+        stageEdicionTarea.close();
+    }
+
+    private void cambiarDatosEvento() {
+        var evento = (Evento) itemEditado;
+        evento.setTitulo(EventoEdicionTitulo.getText());
+        evento.setDescripcion(EventoEdicionDescripcion.getText());
+        guardarCalendario();
+        actualiarLista();
+        stageEdicionEvento.close();
+    }
+
+    private void descripcionItem(Item item) {
+        if (item instanceof Tarea tarea) {
+            TareaEdicionTitulo.setText(tarea.getTitulo());
+            TareaEdicionDescripcion.setText(tarea.getDescripcion());
+            TareaEdicionVencimiento.setText(tarea.getIdTiempo().format(DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy")));
+            TareaEdicionTodoElDia.setSelected(tarea.esTodoElDia());
+            TareaEdicionAlarmas.setText(String.format("%d", tarea.getAlarmas().size()));
+            stageEdicionTarea.show();
+
+        }
+
+        else if (item instanceof Evento evento) {
+            EventoEdicionTitulo.setText(evento.getTitulo());
+            EventoEdicionDescripcion.setText(evento.getDescripcion());
+            EventoEdicionInicio.setText(evento.getIdTiempo().format(DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy")));
+            EventoEdicionFin.setText(evento.getFin().format(DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy")));
+            EventoEdicionAlarmas.setText(String.format("%d", evento.getAlarmas().size()));
+            EventoEdicionRepeticion.setText("No tiene");
+
+            if (evento instanceof EventoRepetible repetible) {
+                String str = null;
+                var calculador = repetible.getCalculador();
+                if (calculador instanceof CalculadorDiario) str = "Diario";
+                else if (calculador instanceof CalculadorSemanal) str = "Semanal";
+                else if (calculador instanceof CalculadorMensual) str = "Mensual";
+                else if (calculador instanceof CalculadorAnual) str = "Anual";
+                EventoEdicionRepeticion.setText(str);
+            }
+
+            stageEdicionEvento.show();
+        }
+
+        itemEditado = item;
+    }
+
+    private void listaClick() {
+        Item item = listaItems.getSelectionModel().getSelectedItem();
+        if (item != null) descripcionItem(item);
     }
 
     private void chequearAlarma() {
@@ -146,12 +251,17 @@ public class Main extends Application {
             return;
 
         if (calendario.getProximaAlarma().getFechaHoraDisparo().isBefore(LocalDateTime.now())) {
-            var duenio = calendario.getProximaAlarma().getDuenio();
+            var alarma = calendario.getProximaAlarma();
+            var duenio = alarma.getDuenio();
             calendario.dispararAlarma();
-            notiAlarmaTitulo.setText(duenio.getTitulo());
-            notiAlarmaDesc.setText(duenio.getDescripcion());
 
-            stageMostrarAlarma.show();
+            if (alarma.notifica()) {
+                notiAlarmaTitulo.setText(duenio.getTitulo());
+                notiAlarmaDesc.setText(duenio.getDescripcion());
+                stageMostrarAlarma.show();
+            }
+
+            guardarCalendario();
             actualiarLista();
         }
     }
@@ -177,6 +287,16 @@ public class Main extends Application {
 
     private void eventoFechaInicialListener() {
         EventoAgregarAlarmas.setDisable(EventoFechaInicial.getValue() == null && TareaTitulo.getText() == null);
+    }
+
+    private void alarmasRelatividadTareaListener() {
+        AlarmasListoTarea.setDisable(AlarmasRelatividadTarea.getValue() == null);
+        if (AlarmasRelatividadTarea.getValue() != null) AlarmasListoTarea.setDisable(false);
+    }
+
+    private void alarmasRelatividadEventoListener() {
+        AlarmasListoEvento.setDisable(AlarmasRelatividadEvento.getValue() == null);
+        if (AlarmasRelatividadEvento.getValue() != null) AlarmasListoEvento.setDisable(false);
     }
 
     private void repeticionListener() {
@@ -234,8 +354,10 @@ public class Main extends Application {
         return !EventoTitulo.getText().isEmpty()
                 && !EventoDescripcion.getText().isEmpty()
                 && EventoFechaInicial.getValue() != null
-                && EventoHora.getValue() != null
-                && EventoMinutos.getValue() != null
+                && EventoHoraInicio.getValue() != null
+                && EventoMinutosInicio.getValue() != null
+                && EventoHoraFin.getValue() != null
+                && EventoMinutosFin.getValue() != null
                 && EventoFechaFinal.getValue() != null
                 && EventoRepeticion.getValue() != null;
     }
@@ -261,8 +383,8 @@ public class Main extends Application {
         if (!chequearCamposEvento()) return;
         var titulo = EventoTitulo.getText();
         var descripcion = EventoDescripcion.getText();
-        var fechaInicial = EventoFechaInicial.getValue().atTime(EventoHora.getValue(), EventoMinutos.getValue());
-        var fechaFinal = EventoFechaFinal.getValue().atTime(EventoHora.getValue(), EventoMinutos.getValue());
+        var fechaInicial = EventoFechaInicial.getValue().atTime(EventoHoraInicio.getValue(), EventoMinutosInicio.getValue());
+        var fechaFinal = EventoFechaFinal.getValue().atTime(EventoHoraFin.getValue(), EventoMinutosFin.getValue());
         var repeticion = EventoRepeticion.getValue();
         if (fechaFinal.isBefore(fechaInicial)) return;
         var evento = new Evento(titulo, descripcion, fechaInicial, fechaFinal);
@@ -309,6 +431,8 @@ public class Main extends Application {
     }
 
     private void alarmasListoTarea(Stage stage) {
+        if (AlarmasRelatividadTarea.getValue() == null) return;
+
         var hora = LocalTime.of(AlarmasHoraTarea.getValue(), AlarmasMinutosTarea.getValue());
         var fecha = TareaFechaInicial.getValue().atTime(TareaHora.getValue(), TareaMinutos.getValue());
         switch (AlarmasRelatividadTarea.getValue()) {
@@ -323,8 +447,10 @@ public class Main extends Application {
     }
 
     private void alarmasListoEvento(Stage stage) {
+        if (AlarmasRelatividadEvento.getValue() == null) return;
+
         var hora = LocalTime.of(AlarmasHoraEvento.getValue(), AlarmasMinutosEvento.getValue());
-        var fecha = EventoFechaInicial.getValue().atTime(EventoHora.getValue(), EventoMinutos.getValue());
+        var fecha = EventoFechaInicial.getValue().atTime(EventoHoraInicio.getValue(), EventoMinutosInicio.getValue());
         switch (AlarmasRelatividadEvento.getValue()) {
             case "Antes"   -> fecha = fecha.minusHours(hora.getHour()).minusMinutes(hora.getMinute());
             case "Después" -> fecha = fecha.plusHours(hora.getHour()).plusMinutes(hora.getMinute());
@@ -347,6 +473,7 @@ public class Main extends Application {
             return stage;
         } catch (Exception e) {
             System.out.println("Error al inicializar la ventana de " + nombreVentana);
+            System.out.println(e.getMessage());
             return null;
         }
     }
@@ -368,12 +495,16 @@ public class Main extends Application {
     private Stage inicializarVentanaEvento() {
         try {
             Stage stage = obtenerStage("vistaAgregarEvento.fxml", "Agregar Evento");
-            SpinnerValueFactory<Integer> horas = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23);
-            SpinnerValueFactory<Integer> minutos = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59);
+            SpinnerValueFactory<Integer> horasInicio = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23);
+            SpinnerValueFactory<Integer> minutosInicio = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59);
+            SpinnerValueFactory<Integer> horasFin = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23);
+            SpinnerValueFactory<Integer> minutosFin = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59);
             SpinnerValueFactory<Integer> cantidad = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE);
             SpinnerValueFactory<Integer> intervalo = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE);
-            EventoHora.setValueFactory(horas);
-            EventoMinutos.setValueFactory(minutos);
+            EventoHoraInicio.setValueFactory(horasInicio);
+            EventoMinutosInicio.setValueFactory(minutosInicio);
+            EventoHoraFin.setValueFactory(horasFin);
+            EventoMinutosFin.setValueFactory(minutosFin);
             EventoRepeticionCantidad.setValueFactory(cantidad);
             EventoRepeticionIntervalo.setValueFactory(intervalo);
             EventoRepeticion.setItems(FXCollections.observableArrayList("No tiene", "Diario", "Semanal", "Mensual", "Anual"));
@@ -413,6 +544,14 @@ public class Main extends Application {
         return obtenerStage(path, "Agregar Alarma");
     }
 
+    private Stage inicializarVentanaEdicionTarea() {
+        return obtenerStage("vistaEditarTarea.fxml", "Tarea");
+    }
+
+    private Stage inicializarVentanaEdicionEvento() {
+        return obtenerStage("vistaEditarEvento.fxml", "Evento");
+    }
+
     private static Calendario obtenerCalendario() {
         try {
             return Calendario.deserializar(new FileInputStream("src/main/calendario.bin"));
@@ -430,5 +569,6 @@ public class Main extends Application {
         }
     }
 
-    // TODO: hacer que se puedan editar los items
+    // TODO: poner mas labels en agregar tareas y eventos
+    // TODO: cambiar tipo de intervalo en la lista
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="195.0" prefWidth="368.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="14.0" layoutY="23.0" text="Titulo:" />
+      <Label layoutX="14.0" layoutY="81.0" text="Fecha de vencimiento:" />
+      <Label layoutX="14.0" layoutY="141.0" text="Alarmas:" />
+      <Label layoutX="15.0" layoutY="111.0" text="Todo el dia:" />
+      <Label layoutX="14.0" layoutY="53.0" text="Descripcion:" />
+      <TextField fx:id="TareaEdicionTitulo" layoutX="57.0" layoutY="19.0" />
+      <TextField fx:id="TareaEdicionDescripcion" layoutX="85.0" layoutY="49.0" />
+      <Text fx:id="TareaEdicionVencimiento" layoutX="135.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="98.0" />
+      <CheckBox fx:id="TareaEdicionTodoElDia" layoutX="85.0" layoutY="111.0" />
+      <Text fx:id="TareaEdicionAlarmas" layoutX="67.0" layoutY="154.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+      <Button fx:id="TareaEdicionGuardar" layoutX="295.0" layoutY="159.0" mnemonicParsing="false" text="Guardar" />
+      <Button fx:id="TareaEdicionEliminar" layoutX="215.0" layoutY="159.0" mnemonicParsing="false" text="Eliminar" />
+      <CheckBox fx:id="TareaEdicionCompletada" layoutX="14.0" layoutY="163.0" mnemonicParsing="false" text="Completada" />
+   </children>
+</Pane>

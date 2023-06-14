@@ -9,26 +9,28 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="457.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="291.0" prefWidth="457.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <DatePicker fx:id="EventoFechaInicial" layoutX="18.0" layoutY="176.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingreasar fecha inicial" />
       <TextField fx:id="EventoTitulo" layoutX="18.0" layoutY="22.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingresar titulo" />
       <TextArea fx:id="EventoDescripcion" layoutX="18.0" layoutY="62.0" prefHeight="63.0" prefWidth="330.0" promptText="Ingresar descripcion" />
-      <DatePicker fx:id="EventoFechaFinal" layoutX="18.0" layoutY="211.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingresar fecha final" />
+      <DatePicker fx:id="EventoFechaFinal" layoutX="18.0" layoutY="252.0" prefHeight="25.0" prefWidth="157.0" promptText="Ingresar fecha final" />
       <ChoiceBox fx:id="EventoRepeticion" layoutX="191.0" layoutY="134.0" prefHeight="25.0" prefWidth="94.0" />
       <Button fx:id="EventoAgregarAlarmas" disable="true" layoutX="216.0" layoutY="22.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="118.0" text="Agregar alarmas" />
-      <Button fx:id="EventoListo" layoutX="219.0" layoutY="207.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="118.0" text="Listo" />
-      <Spinner fx:id="EventoHora" editable="true" layoutX="18.0" layoutY="134.0" prefHeight="25.0" prefWidth="73.0" />
-      <Spinner fx:id="EventoMinutos" layoutX="102.0" layoutY="134.0" prefHeight="25.0" prefWidth="73.0" />
+      <Button fx:id="EventoListo" layoutX="216.0" layoutY="245.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="118.0" text="Listo" />
+      <Spinner fx:id="EventoHoraInicio" editable="true" layoutX="18.0" layoutY="134.0" prefHeight="25.0" prefWidth="73.0" />
+      <Spinner fx:id="EventoMinutosInicio" layoutX="102.0" layoutY="134.0" prefHeight="25.0" prefWidth="73.0" />
       <Spinner fx:id="EventoRepeticionCantidad" disable="true" editable="true" layoutX="295.0" layoutY="164.0" prefHeight="25.0" prefWidth="53.0" />
       <DatePicker fx:id="EventoRepeticionFecha" disable="true" layoutX="191.0" layoutY="164.0" prefHeight="25.0" prefWidth="94.0" promptText="Ingreasar fecha inicial" />
-      <CheckBox fx:id="EventoLunes" disable="true" layoutX="362.0" layoutY="22.0" mnemonicParsing="false" text="Lunes" />
-      <CheckBox fx:id="EventoMartes" disable="true" layoutX="362.0" layoutY="50.0" mnemonicParsing="false" text="Martes" />
-      <CheckBox fx:id="EventoMiercoles" disable="true" layoutX="362.0" layoutY="81.0" mnemonicParsing="false" text="Miercoles" />
-      <CheckBox fx:id="EventoJueves" disable="true" layoutX="362.0" layoutY="113.0" mnemonicParsing="false" text="Jueves" />
-      <CheckBox fx:id="EventoViernes" disable="true" layoutX="362.0" layoutY="147.0" mnemonicParsing="false" text="Viernes" />
-      <CheckBox fx:id="EventoSabado" disable="true" layoutX="362.0" layoutY="211.0" mnemonicParsing="false" text="Domingo" />
-      <CheckBox fx:id="EventoDomingo" disable="true" layoutX="362.0" layoutY="176.0" mnemonicParsing="false" text="Sabado" />
+      <CheckBox fx:id="EventoLunes" disable="true" layoutX="359.0" layoutY="26.0" mnemonicParsing="false" text="Lunes" />
+      <CheckBox fx:id="EventoMartes" disable="true" layoutX="359.0" layoutY="62.0" mnemonicParsing="false" text="Martes" />
+      <CheckBox fx:id="EventoMiercoles" disable="true" layoutX="360.0" layoutY="102.0" mnemonicParsing="false" text="Miercoles" />
+      <CheckBox fx:id="EventoJueves" disable="true" layoutX="360.0" layoutY="138.0" mnemonicParsing="false" text="Jueves" />
+      <CheckBox fx:id="EventoViernes" disable="true" layoutX="361.0" layoutY="180.0" mnemonicParsing="false" text="Viernes" />
+      <CheckBox fx:id="EventoSabado" disable="true" layoutX="361.0" layoutY="249.0" mnemonicParsing="false" text="Domingo" />
+      <CheckBox fx:id="EventoDomingo" disable="true" layoutX="360.0" layoutY="212.0" mnemonicParsing="false" text="Sabado" />
       <Spinner fx:id="EventoRepeticionIntervalo" disable="true" editable="true" layoutX="295.0" layoutY="134.0" prefHeight="25.0" prefWidth="53.0" />
+      <Spinner fx:id="EventoHoraFin" editable="true" layoutX="18.0" layoutY="220.0" prefHeight="25.0" prefWidth="73.0" />
+      <Spinner fx:id="EventoMinutosFin" layoutX="102.0" layoutY="220.0" prefHeight="25.0" prefWidth="73.0" />
    </children>
 </Pane>

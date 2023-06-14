@@ -62,14 +62,6 @@ public class Alarma implements Serializable {
         return muestraNotificacion;
     }
 
-    public boolean suena() {
-        return suena;
-    }
-
-    public boolean mandaMail() {
-        return mandaMail;
-    }
-
     public Alarma setConfig(boolean mandaMail, boolean suena, boolean muestraNotificacion) {
         this.mandaMail = mandaMail;
         this.suena = suena;

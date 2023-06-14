@@ -40,17 +40,19 @@ public class Tarea extends Item {
         return fechaDeVencimiento;
     }
 
-    public void setFechaDeVencimiento(LocalDateTime fechaDeVencimiento) {
-        this.fechaDeVencimiento = fechaDeVencimiento;
+    public boolean esTodoElDia() {
+        return todoElDia;
     }
 
-    public boolean toggleCompletacion() {
-        completada = !completada;
+    public boolean estaCompletada() {
         return completada;
     }
 
-    public boolean toggleTodoElDia() {
-        todoElDia = !todoElDia;
-        return todoElDia;
+    public void setCompletada(boolean b) {
+        completada = b;
+    }
+
+    public void setTodoElDia(boolean b) {
+        todoElDia = b;
     }
 }
