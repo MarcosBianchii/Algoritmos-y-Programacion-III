@@ -8,16 +8,18 @@ public abstract class CalculadorDeFechas implements Serializable {
     public abstract LocalDate sumarRepeticion(LocalDate fecha, int repeticion);
 
     public boolean caeEn(EventoRepetible repetible, LocalDate fecha) {
-        var f = repetible.inicio.toLocalDate();
+        var inicio = repetible.inicio.toLocalDate();
+        var fin = repetible.fin.toLocalDate();
 
         for (int i = 0; i <= repetible.getCantidadRepeticiones() || repetible.esInfinito(); i++) {
-            if (f.isEqual(fecha))
+            if (!inicio.isBefore(fecha) && !fin.isAfter(fecha))
                 return true;
 
-            if (f.isAfter(fecha))
+            if (inicio.isAfter(fecha))
                 break;
 
-            f = this.sumarRepeticion(f, 1);
+            inicio = sumarRepeticion(inicio, 1);
+            fin = sumarRepeticion(fin, 1);
         }
 
         return false;

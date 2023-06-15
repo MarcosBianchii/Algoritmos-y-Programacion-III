@@ -37,8 +37,8 @@ public class EventoRepetibleDecorator extends EventoRepetible {
 
         str.append(" | ").append(fechaInicio.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         str.append(" | ").append(fechaFin.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        str.append(!alarmas.isEmpty() ? " | " : "");
-        str.append("*".repeat(alarmas.size()));
+        str.append(!repetible.getAlarmas().isEmpty() ? " | " : "");
+        str.append("*".repeat(repetible.getAlarmas().size()));
         return str.toString();
     }
 

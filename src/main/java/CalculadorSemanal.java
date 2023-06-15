@@ -52,16 +52,19 @@ public class CalculadorSemanal extends CalculadorDeFechas {
 
     @Override
     public boolean caeEn(EventoRepetible repetible, LocalDate fecha) {
-        LocalDate f = repetible.inicio.toLocalDate();
+        var inicio = repetible.getIdTiempo().toLocalDate();
+        var fin = repetible.getFin().toLocalDate();
         long corte = repetible.getCantidadRepeticiones() * repetible.getDias().stream().filter(x -> x).count();
+
         for (int i = 0; i <= corte || repetible.esInfinito(); i++) {
-            if (f.isEqual(fecha))
+            if (!inicio.isBefore(fecha) && !fin.isAfter(fecha))
                 return true;
 
-            if (f.isAfter(fecha))
+            if (inicio.isAfter(fecha))
                 break;
 
-            f = proximaFecha(repetible, f);
+            inicio = proximaFecha(repetible, inicio);
+            fin = proximaFecha(repetible, fin);
         }
 
         return false;

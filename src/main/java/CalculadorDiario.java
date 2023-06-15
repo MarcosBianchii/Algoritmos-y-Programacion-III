@@ -19,16 +19,17 @@ public class CalculadorDiario extends CalculadorDeFechas {
 
     @Override
     public boolean caeEn(EventoRepetible repetible, LocalDate fecha) {
-        LocalDate f = repetible.inicio.toLocalDate();
-
+        var inicio = repetible.getIdTiempo().toLocalDate();
+        var fin = repetible.getFin().toLocalDate();
         for (int i = 0; i <= repetible.getCantidadRepeticiones() || repetible.esInfinito(); i++) {
-            if (f.isEqual(fecha))
+            if (!inicio.isBefore(fecha) && !fin.isAfter(fecha))
                 return true;
 
-            if (f.isAfter(fecha))
+            if (inicio.isAfter(fecha))
                 break;
 
-            f = sumarRepeticion(f, repetible.getFrecuenciaDiaria());
+            inicio = sumarRepeticion(inicio, repetible.getFrecuenciaDiaria());
+            fin = sumarRepeticion(fin, repetible.getFrecuenciaDiaria());
         }
 
         return false;
