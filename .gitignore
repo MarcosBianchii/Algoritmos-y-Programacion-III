@@ -37,4 +37,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-src/main/calendario.bin
+src/main/resources/calendario.bin

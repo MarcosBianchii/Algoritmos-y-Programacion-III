@@ -21,6 +21,7 @@ public class EventoRepetible extends Evento {
         dias.addAll(repetible.dias);
         frecuenciaDiaria = repetible.frecuenciaDiaria;
         infinito = repetible.infinito;
+        repeticion = repetible.repeticion;
     }
 
     public EventoRepetible(Evento evento) {
@@ -57,6 +58,7 @@ public class EventoRepetible extends Evento {
         calculador = new CalculadorDiario();
         cantidadRepeticiones = cantidad;
         frecuenciaDiaria = intevalo;
+        repeticion = Repeticion.DIARIA;
         if (cantidad == 0) infinito = true;
     }
 
@@ -65,6 +67,7 @@ public class EventoRepetible extends Evento {
         long cantidad = this.inicio.until(hasta, ChronoUnit.DAYS);
         cantidadRepeticiones = Math.toIntExact((long) Math.floor((double) Math.toIntExact(cantidad) / intervalo));
         frecuenciaDiaria = intervalo;
+        repeticion = Repeticion.DIARIA;
     }
 
     public void setRepeticionSemanal(ArrayList<Boolean> dias, int cantidad) {
@@ -72,6 +75,7 @@ public class EventoRepetible extends Evento {
         this.dias.clear();
         this.dias.addAll(dias);
         cantidadRepeticiones = cantidad;
+        repeticion = Repeticion.SEMANAL;
         if (cantidad == 0) infinito = true;
     }
 
@@ -81,11 +85,13 @@ public class EventoRepetible extends Evento {
         this.dias.addAll(dias);
         long cantidad = this.inicio.until(hasta, ChronoUnit.WEEKS);
         cantidadRepeticiones = Math.toIntExact(cantidad);
+        repeticion = Repeticion.SEMANAL;
     }
 
     public void setRepeticionMensual(int cantidad) {
         calculador = new CalculadorMensual();
         cantidadRepeticiones = cantidad;
+        repeticion = Repeticion.MENSUAL;
         if (cantidad == 0) infinito = true;
     }
 
@@ -93,11 +99,13 @@ public class EventoRepetible extends Evento {
         calculador = new CalculadorMensual();
         long cantidad = inicio.until(hasta, ChronoUnit.MONTHS);
         cantidadRepeticiones = Math.toIntExact(cantidad);
+        repeticion = Repeticion.MENSUAL;
     }
 
     public void setRepeticionAnual(int cantidad) {
         calculador = new CalculadorAnual();
         cantidadRepeticiones = cantidad;
+        repeticion = Repeticion.ANUAL;
         if (cantidad == 0) infinito = true;
     }
 
@@ -105,6 +113,7 @@ public class EventoRepetible extends Evento {
         calculador = new CalculadorAnual();
         long cantidad = inicio.until(hasta, ChronoUnit.YEARS);
         cantidadRepeticiones = Math.toIntExact(cantidad);
+        repeticion = Repeticion.ANUAL;
     }
 
     public boolean caeEn(LocalDate fecha) {
@@ -119,9 +128,5 @@ public class EventoRepetible extends Evento {
 
     public boolean esInfinito() {
         return infinito;
-    }
-
-    public CalculadorDeFechas getCalculador() {
-        return calculador;
     }
 }

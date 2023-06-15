@@ -5,6 +5,7 @@ import java.util.*;
 public abstract class Item implements Serializable {
     protected String titulo;
     protected String descripcion;
+    protected Repeticion repeticion;
     protected final Map<LocalDateTime,Alarma> alarmas = new HashMap<>();
 
     public abstract LocalDateTime getIdTiempo();
@@ -43,5 +44,9 @@ public abstract class Item implements Serializable {
 
     public void borrarAlarma(Alarma alarma) {
         alarmas.remove(alarma.getFechaHoraDisparo());
+    }
+
+    public Repeticion getRepeticion() {
+        return repeticion;
     }
 }

@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Main extends Application {
     // Vista principal
@@ -110,7 +111,8 @@ public class Main extends Application {
     private final ObservableList<Item> items = FXCollections.observableList(new ArrayList<>());
     private final List<Alarma> alarmasBuffer = new ArrayList<>();
     private int numeroIntervalo = 0;
-    private Item itemEditado = null;
+    private Tarea tareaEditada = null;
+    private Evento eventoEditado = null;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -147,13 +149,12 @@ public class Main extends Application {
         // Vista edicion tarea
         stageEdicionTarea = inicializarVentanaEdicionTarea();
         TareaEdicionGuardar.setOnAction(e -> cambiarDatosTarea());
-        TareaEdicionEliminar.setOnAction(e -> eliminarItem());
+        TareaEdicionEliminar.setOnAction(e -> eliminarItem(tareaEditada));
 
         // Vista edicion Evento
         stageEdicionEvento = inicializarVentanaEdicionEvento();
         EventoEdicionGuardar.setOnAction(e -> cambiarDatosEvento());
-        EventoEdicionEliminar.setOnAction(e -> eliminarItem());
-
+        EventoEdicionEliminar.setOnAction(e -> eliminarItem(eventoEditado));
 
         // Vista agregar tarea
         TareaListo.setOnAction(e -> tareaListo(stageTarea));
@@ -315,61 +316,50 @@ public class Main extends Application {
     }
 
     private void descripcionItem(Item item) {
-        if (item instanceof Tarea tarea) {
+        if (item.getRepeticion() == Repeticion.NO_REPETIBLE) {
+            var tarea = (Tarea) item;
             TareaEdicionTitulo.setText(tarea.getTitulo());
             TareaEdicionDescripcion.setText(tarea.getDescripcion());
             TareaEdicionVencimiento.setText(tarea.getIdTiempo().format(DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy")));
             TareaEdicionTodoElDia.setSelected(tarea.esTodoElDia());
             TareaEdicionAlarmas.setText(String.format("%d", tarea.getAlarmas().size()));
+            tareaEditada = tarea;
             stageEdicionTarea.show();
         }
 
-        else if (item instanceof Evento evento) {
+        else {
+            var evento = (Evento) item;
             EventoEdicionTitulo.setText(evento.getTitulo());
             EventoEdicionDescripcion.setText(evento.getDescripcion());
             EventoEdicionInicio.setText(evento.getIdTiempo().format(DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy")));
             EventoEdicionFin.setText(evento.getFin().format(DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy")));
             EventoEdicionAlarmas.setText(String.format("%d", evento.getAlarmas().size()));
-            EventoEdicionRepeticion.setText("No tiene");
-
-            if (evento instanceof EventoRepetible repetible) {
-                String str = null;
-                var calculador = repetible.getCalculador();
-                if (calculador instanceof CalculadorDiario) str = "Diario";
-                else if (calculador instanceof CalculadorSemanal) str = "Semanal";
-                else if (calculador instanceof CalculadorMensual) str = "Mensual";
-                else if (calculador instanceof CalculadorAnual) str = "Anual";
-                EventoEdicionRepeticion.setText(str);
-            }
-
+            EventoEdicionRepeticion.setText(evento.getRepeticion().toString());
+            eventoEditado = evento;
             stageEdicionEvento.show();
         }
-
-        itemEditado = item;
     }
 
     private void cambiarDatosTarea() {
-        var tarea = (Tarea) itemEditado;
-        tarea.setTitulo(TareaEdicionTitulo.getText());
-        tarea.setDescripcion(TareaEdicionDescripcion.getText());
-        tarea.setTodoElDia(TareaEdicionTodoElDia.isSelected());
-        tarea.setCompletada(TareaEdicionCompletada.isSelected());
+        tareaEditada.setTitulo(TareaEdicionTitulo.getText());
+        tareaEditada.setDescripcion(TareaEdicionDescripcion.getText());
+        tareaEditada.setTodoElDia(TareaEdicionTodoElDia.isSelected());
+        tareaEditada.setCompletada(TareaEdicionCompletada.isSelected());
         guardarCalendario();
         actualizarLista();
         stageEdicionTarea.close();
     }
 
     private void cambiarDatosEvento() {
-        var evento = (Evento) itemEditado;
-        evento.setTitulo(EventoEdicionTitulo.getText());
-        evento.setDescripcion(EventoEdicionDescripcion.getText());
+        eventoEditado.setTitulo(EventoEdicionTitulo.getText());
+        eventoEditado.setDescripcion(EventoEdicionDescripcion.getText());
         guardarCalendario();
         actualizarLista();
         stageEdicionEvento.close();
     }
 
-    private void eliminarItem() {
-        calendario.eliminar(itemEditado);
+    private void eliminarItem(Item item) {
+        calendario.eliminar(item);
         guardarCalendario();
         actualizarLista();
         stageEdicionTarea.close();
@@ -377,26 +367,22 @@ public class Main extends Application {
     }
 
     private void chequearAlarma() {
-        if (calendario.getProximaAlarma() == null)
-            return;
+        try {
+            if (calendario.getProximaAlarma().getFechaHoraDisparo().isBefore(LocalDateTime.now())) {
+                var alarma = calendario.getProximaAlarma();
+                var duenio = alarma.getDuenio();
+                calendario.dispararAlarma();
 
-        if (calendario.getProximaAlarma().getFechaHoraDisparo() == null)
-            return;
+                if (alarma.notifica()) {
+                    notiAlarmaTitulo.setText(duenio.getTitulo());
+                    notiAlarmaDesc.setText(duenio.getDescripcion());
+                    stageMostrarAlarma.show();
+                }
 
-        if (calendario.getProximaAlarma().getFechaHoraDisparo().isBefore(LocalDateTime.now())) {
-            var alarma = calendario.getProximaAlarma();
-            var duenio = alarma.getDuenio();
-            calendario.dispararAlarma();
-
-            if (alarma.notifica()) {
-                notiAlarmaTitulo.setText(duenio.getTitulo());
-                notiAlarmaDesc.setText(duenio.getDescripcion());
-                stageMostrarAlarma.show();
+                guardarCalendario();
+                actualizarLista();
             }
-
-            guardarCalendario();
-            actualizarLista();
-        }
+        } catch (NullPointerException ignored) {}
     }
 
     private void tareaFechaInicialListener() {
@@ -510,7 +496,6 @@ public class Main extends Application {
         alarmasBuffer.forEach(x -> x.setDuenio(evento));
         calendario.agregar(evento).agregarAlarmas(evento, alarmasBuffer);
         alarmasBuffer.clear();
-
         switch (repeticion) {
             case "Diario" -> {
                 var repetible = calendario.toRepetible(evento);
@@ -580,9 +565,9 @@ public class Main extends Application {
         stage.close();
     }
 
-    private static Calendario obtenerCalendario() {
+    private Calendario obtenerCalendario() {
         try {
-            return Calendario.deserializar(new FileInputStream("src/main/calendario.bin"));
+            return Calendario.deserializar(getClass().getResourceAsStream("calendario.bin"));
         } catch (Exception e) {
             return new Calendario("mail@fi.uba.ar");
         }
@@ -590,10 +575,8 @@ public class Main extends Application {
 
     private void guardarCalendario() {
         try {
-            calendario.serializar(new FileOutputStream("src/main/calendario.bin"));
-        } catch (IOException e) {
-            // No puede pasar.
-            System.out.println("Error al guardar el calendario");
-        }
+            var path = Objects.requireNonNull(getClass().getResource("calendario.bin")).getPath();
+            calendario.serializar(new FileOutputStream(path));
+        } catch (Exception ignored) {}
     }
 }

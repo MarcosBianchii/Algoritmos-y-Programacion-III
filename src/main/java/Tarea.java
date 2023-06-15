@@ -3,7 +3,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Tarea extends Item {
     private boolean todoElDia;
-    private LocalDateTime fechaDeVencimiento;
+    private final LocalDateTime fechaDeVencimiento;
     private boolean completada = false;
 
     public Tarea(String titulo, String descripcion, LocalDateTime fechaDeVencimiento) {
@@ -15,6 +15,7 @@ public class Tarea extends Item {
         this.descripcion = descripcion;
         this.fechaDeVencimiento = fechaDeVencimiento;
         this.todoElDia = todoElDia;
+        repeticion = Repeticion.NO_REPETIBLE;
     }
 
     @Override

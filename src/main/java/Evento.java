@@ -17,6 +17,7 @@ public class Evento extends Item {
         descripcion = repetible.descripcion;
         inicio = repetible.inicio;
         fin = repetible.fin;
+        repeticion = Repeticion.NO_TIENE;
     }
 
     @Override
