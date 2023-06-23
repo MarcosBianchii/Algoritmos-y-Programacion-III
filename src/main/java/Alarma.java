@@ -87,7 +87,8 @@ public class Alarma implements Serializable {
             if (this.getFechaHoraDisparo() == null)
                 this.duenioRepetible.borrarAlarma(this);
         } else {
-            duenio.borrarAlarma(this);
+            if (duenio != null)
+                duenio.borrarAlarma(this);
             this.setFechaHoraDisparo(null);
         }
     }
