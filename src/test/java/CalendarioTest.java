@@ -46,39 +46,27 @@ public class CalendarioTest {
         var momento = LocalDateTime.of(2020, 1, 1, 0, 0);
         var calendario = new Calendario("mail");
 
-        var evento0 = new EventoRepetible("Evento 1", "Descripcion 1", momento, momento);
-        evento0.setRepeticionDiaria(3, 10);
+        var repetible0 = new EventoRepetible("Repetible 0", "Descripcion 0", momento, momento.plusHours(2));
+        repetible0.setRepeticionDiaria(1, 10);
+        calendario.agregar(repetible0);
 
-        var evento1 = new EventoRepetible("Evento 2", "Descripcion 2", momento, momento.plusDays(1));
-        evento1.setRepeticionSemanal(new ArrayList<>(List.of(new Boolean[]{true, true, false, false, false, false, false})), 10);
-
-        var evento2 = new EventoRepetible("Evento 3", "Descripcion 3", momento, momento.plusDays(2));
-        evento2.setRepeticionMensual(10);
-
-        var evento3 = new EventoRepetible("Evento 4", "Descripcion 4", momento, momento.plusDays(3));
-        evento3.setRepeticionAnual(10);
-
-        calendario.agregar(evento0);
-        calendario.agregar(evento1);
-        calendario.agregar(evento2);
-        calendario.agregar(evento3);
-
-        var items = calendario.getItems(momento, momento.plusWeeks(1));
-        assertEquals(4, items.size());
-
-        items = calendario.getItems(momento.plusDays(1), momento.plusWeeks(2));
+        var items = calendario.getItems(momento, momento.plusDays(2));
         assertEquals(2, items.size());
 
-        items = calendario.getItems(momento, momento.plusYears(1).plusDays(1));
-        assertEquals(4, items.size());
+        items = calendario.getItems(momento, momento.plusDays(7));
+        assertEquals(7, items.size());
 
-        calendario.toEvento(evento0);
-        calendario.toEvento(evento1);
-        calendario.toEvento(evento2);
-        calendario.toEvento(evento3);
+        calendario.eliminar(repetible0);
 
-        items = calendario.getItems(momento.plusDays(1), momento.plusYears(10));
-        assertEquals(0, items.size());
+        items = calendario.getItems(momento, momento.plusDays(10));
+        assertTrue(items.isEmpty());
+
+        var repetible1 = new EventoRepetible("Repetible 1", "Descripcion 1", momento, momento.plusHours(2));
+        repetible1.setRepeticionSemanal(new ArrayList<>(List.of(false, true, true, false, false, false, false)), 1);
+        calendario.agregar(repetible1);
+
+        items = calendario.getItems(momento, momento.plusWeeks(10));
+        assertEquals(3, items.size());
     }
 
     @Test

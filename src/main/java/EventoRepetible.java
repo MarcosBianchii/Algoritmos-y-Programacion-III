@@ -5,12 +5,23 @@ import java.util.*;
 public class EventoRepetible extends Evento {
     private CalculadorDeFechas calculador = null;
     private int cantidadRepeticiones = 0;
+    private boolean infinito = false;
 
     private final ArrayList<Boolean> dias = new ArrayList<>(); // MON, TUE, WED, THU, FRI, SAT, SUN
     private int frecuenciaDiaria = 0;
 
     public EventoRepetible(String titulo, String descripcion, LocalDateTime inicio, LocalDateTime fin) {
         super(titulo, descripcion, inicio, fin);
+    }
+
+    public EventoRepetible(EventoRepetible repetible) {
+        super(repetible);
+        calculador = repetible.calculador;
+        cantidadRepeticiones = repetible.cantidadRepeticiones;
+        dias.addAll(repetible.dias);
+        frecuenciaDiaria = repetible.frecuenciaDiaria;
+        infinito = repetible.infinito;
+        repeticion = repetible.repeticion;
     }
 
     public EventoRepetible(Evento evento) {
@@ -47,6 +58,8 @@ public class EventoRepetible extends Evento {
         calculador = new CalculadorDiario();
         cantidadRepeticiones = cantidad;
         frecuenciaDiaria = intevalo;
+        repeticion = Repeticion.DIARIA;
+        if (cantidad == 0) infinito = true;
     }
 
     public void setRepeticionDiaria(int intervalo, LocalDateTime hasta) {
@@ -54,6 +67,7 @@ public class EventoRepetible extends Evento {
         long cantidad = this.inicio.until(hasta, ChronoUnit.DAYS);
         cantidadRepeticiones = Math.toIntExact((long) Math.floor((double) Math.toIntExact(cantidad) / intervalo));
         frecuenciaDiaria = intervalo;
+        repeticion = Repeticion.DIARIA;
     }
 
     public void setRepeticionSemanal(ArrayList<Boolean> dias, int cantidad) {
@@ -61,6 +75,8 @@ public class EventoRepetible extends Evento {
         this.dias.clear();
         this.dias.addAll(dias);
         cantidadRepeticiones = cantidad;
+        repeticion = Repeticion.SEMANAL;
+        if (cantidad == 0) infinito = true;
     }
 
     public void setRepeticionSemanal(ArrayList<Boolean> dias, LocalDateTime hasta) {
@@ -69,49 +85,48 @@ public class EventoRepetible extends Evento {
         this.dias.addAll(dias);
         long cantidad = this.inicio.until(hasta, ChronoUnit.WEEKS);
         cantidadRepeticiones = Math.toIntExact(cantidad);
+        repeticion = Repeticion.SEMANAL;
     }
 
     public void setRepeticionMensual(int cantidad) {
         calculador = new CalculadorMensual();
         cantidadRepeticiones = cantidad;
+        repeticion = Repeticion.MENSUAL;
+        if (cantidad == 0) infinito = true;
     }
 
     public void setRepeticionMensual(LocalDateTime hasta) {
         calculador = new CalculadorMensual();
         long cantidad = inicio.until(hasta, ChronoUnit.MONTHS);
         cantidadRepeticiones = Math.toIntExact(cantidad);
+        repeticion = Repeticion.MENSUAL;
     }
 
     public void setRepeticionAnual(int cantidad) {
         calculador = new CalculadorAnual();
         cantidadRepeticiones = cantidad;
+        repeticion = Repeticion.ANUAL;
+        if (cantidad == 0) infinito = true;
     }
 
     public void setRepeticionAnual(LocalDateTime hasta) {
         calculador = new CalculadorAnual();
         long cantidad = inicio.until(hasta, ChronoUnit.YEARS);
         cantidadRepeticiones = Math.toIntExact(cantidad);
+        repeticion = Repeticion.ANUAL;
     }
 
-    public boolean caeEntre(LocalDate desde, LocalDate hasta) {
-        LocalDate fecha = inicio.toLocalDate();
-
-        for (int i = 0; i < cantidadRepeticiones; i++) {
-            if (fecha.isAfter(desde.minusDays(1)) && fecha.isBefore(hasta))
-                return true;
-
-            if (fecha.isAfter(hasta))
-                break;
-
-            fecha = calculador.sumarRepeticion(fecha, 1);
-        }
-
-        return false;
+    public boolean caeEn(LocalDate fecha) {
+        return calculador.caeEn(this, fecha);
     }
 
     public LocalDateTime computarProximaFecha(Alarma alarma) {
         LocalDateTime fecha = calculador.calcularFechaSiguiente(this, alarma);
         LocalDateTime fechaLimite = calculador.calcularFechaLimite(this, alarma);
         return fecha.isAfter(fechaLimite) ? null : fecha;
+    }
+
+    public boolean esInfinito() {
+        return infinito;
     }
 }
